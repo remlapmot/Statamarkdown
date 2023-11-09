@@ -1,5 +1,5 @@
 Package: Statamarkdown
-Version: 0.8.0
+Version: 0.9.0
 Date: 2023-11-09
 Title: 'Stata' Markdown
 Description: Settings and functions to extend the 'knitr' 'Stata' engine.
