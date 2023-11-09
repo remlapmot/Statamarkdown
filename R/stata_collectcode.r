@@ -35,9 +35,16 @@ stata_collectcode <- function() {
             close(autoexec)
 #            print(sys.frames())
 #            print(sys.calls())
+        if (utils::packageVersion('knitr') < '1.45') {
         do.call("on.exit",
             list(quote(unlink("profile.do")), add=TRUE),
             envir = sys.frame(-9))
+        }
+        if (utils::packageVersion('knitr') >= '1.45') {
+          do.call("on.exit",
+            list(quote(unlink("profile.do")), add=TRUE),
+            envir = sys.frame(-10))
+        }
         if (!is.null(oprofile)) {
             do.call("on.exit",
                 list(quote(writeLines(oprofile, "profile.do")), add=TRUE),
