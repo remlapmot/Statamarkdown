@@ -46,9 +46,16 @@ stata_collectcode <- function() {
             envir = sys.frame(-10))
         }
         if (!is.null(oprofile)) {
+          if (utils::packageVersion('knitr') < '1.45') {
             do.call("on.exit",
                 list(quote(writeLines(oprofile, "profile.do")), add=TRUE),
                 envir = sys.frame(-9))
+            }
+          if (utils::packageVersion('knitr') >= '1.45') {
+            do.call("on.exit",
+              list(quote(writeLines(oprofile, "profile.do")), add=TRUE),
+              envir = sys.frame(-10))
+          }
         }
             # sys.frame(1) or sys.frame(-10) is rmarkdown::render()
             # sys.frame(-9) is knitr::knit()
