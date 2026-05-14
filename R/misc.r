@@ -15,7 +15,7 @@
   knitr::opts_chunk$set(error=TRUE, cleanlog=TRUE, comment=NA, noisy=FALSE)
 
   # Hook to place collected chunk contents in a profile.do file
-  stata_collectcode()
+  stata_collectcode(stataexe)
 
   packageStartupMessage("The 'stata' engine is ready to use.")
 }

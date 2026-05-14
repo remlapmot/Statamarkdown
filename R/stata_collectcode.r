@@ -1,9 +1,10 @@
-stata_collectcode <- function() {
+stata_collectcode <- function(stataexe) {
   # Message when Statamarkdown loads
-  if (file.exists(file.path(dirname(find_stata(message=FALSE)), "sysprofile.do"))) {
+  statadir <- dirname(stataexe)
+  if (file.exists(file.path(statadir, "sysprofile.do"))) {
     packageStartupMessage("Found a 'sysprofile.do'")
   }
-  if (file.exists(file.path(dirname(find_stata(message=FALSE)), "profile.do"))) {
+  if (file.exists(file.path(statadir, "profile.do"))) {
     packageStartupMessage("Found a 'profile.do' in the STATA executable directory.")
     packageStartupMessage("  This prevents 'collectcode' from working.")
     packageStartupMessage("  Please rename this 'sysprofile.do'.")
