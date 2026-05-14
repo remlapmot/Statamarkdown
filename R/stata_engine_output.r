@@ -27,22 +27,14 @@ stata_engine_output <- function(x, options) {
           loopcommands <- grep("^[[:space:]]+[[:digit:]]+\\.", y)
         }
         if (length(commandlines)>0 && length(loopcommands)>0) {
-          for (i in 1:length(loopcommands)) {
-            if ((loopcommands[i]-1) %in% commandlines) {
-              commandlines <- c(commandlines, loopcommands[i])
-            }
-          }
+          commandlines <- c(commandlines, loopcommands[(loopcommands - 1L) %in% commandlines])
         }
         # Long command lines are wrapped, with an initial ">"
         if (length(commandlines)>0) {
           continuations <- grep("^>[[:space:]]", y)
         }
         if (length(commandlines)>0 && length(continuations)>0) {
-          for (i in 1:length(continuations)) {
-            if ((continuations[i]-1) %in% commandlines) {
-              commandlines <- c(commandlines, continuations[i])
-            }
-          }
+          commandlines <- c(commandlines, continuations[(continuations - 1L) %in% commandlines])
         }
         # remove
         if (length(commandlines)>0) {y <- y[-(commandlines)]}
