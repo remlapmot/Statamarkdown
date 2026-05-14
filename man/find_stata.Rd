@@ -9,7 +9,7 @@ automatically when \pkg{Statamarkdown} is loaded.
 This function searches for recent versions of Stata (>= Stata 11),
 in some of the usual default installation locations.
 
-If Stata is not found, you will have to specify it's
+If Stata is not found, you will have to specify its
 correct location yourself.
 
 }
