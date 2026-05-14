@@ -55,7 +55,7 @@ stata_engine <- function (options)
   }
 
   out = if (!all(options$eval==FALSE)) {
-    if (!is.null(options$noisey) && options$noisey==TRUE) message("running: ", cmd, " ", code)
+    if (!is.null(options$noisy) && options$noisy==TRUE) message("running: ", cmd, " ", code)
     tryCatch(system2(cmd, code, stdout = TRUE, stderr = TRUE,
                      env = options$engine.env), error = function(e) {
                        if (!options$error)
