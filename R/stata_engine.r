@@ -42,7 +42,7 @@ stata_engine <- function (options)
 
   if (is.list(options$engine.opts)) {
     code = paste(options$engine.opts[[options$engine]], code, options$doargs)
-  } else { # backwards compatability
+  } else { # backwards compatibility
     code = paste(options$engine.opts, code, options$doargs)
   }
 # print(code)
@@ -50,7 +50,7 @@ stata_engine <- function (options)
   cmd = options$engine.path
   if (is.list(options$engine.path)) {
     cmd = options$engine.path[[options$engine]]
-  } else { # backwards compatability
+  } else { # backwards compatibility
     cmd = options$engine.path
   }
 
