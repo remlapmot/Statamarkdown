@@ -21,7 +21,7 @@ Your first code chunk will look something like this:
     ```
     
 This will either report that Stata was found, or
-that you need to specify it\'s location yourself.
+that you need to specify its location yourself.
 ```{r library}
 library(Statamarkdown)
 ```
