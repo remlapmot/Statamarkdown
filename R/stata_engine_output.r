@@ -57,7 +57,8 @@ stata_engine_output <- function(x, options) {
       if (length(y)>0 && y[length(y)] != "") { y <- c(y, "") }
 
       # Remove blank lines at the top of any Stata log
-      firsttext <- min(grep("[[:alnum:]]", y))
+      alnum_lines <- grep("[[:alnum:]]", y)
+      firsttext <- if (length(alnum_lines) > 0) min(alnum_lines) else Inf
       if (firsttext != Inf && firsttext != 1) {
         y <- y[-(1:(firsttext-1))]
         }
