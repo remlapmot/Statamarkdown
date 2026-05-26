@@ -1,9 +1,10 @@
-stata_collectcode <- function() {
+stata_collectcode <- function(stataexe) {
   # Message when Statamarkdown loads
-  if (file.exists(file.path(dirname(find_stata(message=FALSE)), "sysprofile.do"))) {
+  statadir <- dirname(stataexe)
+  if (file.exists(file.path(statadir, "sysprofile.do"))) {
     packageStartupMessage("Found a 'sysprofile.do'")
   }
-  if (file.exists(file.path(dirname(find_stata(message=FALSE)), "profile.do"))) {
+  if (file.exists(file.path(statadir, "profile.do"))) {
     packageStartupMessage("Found a 'profile.do' in the STATA executable directory.")
     packageStartupMessage("  This prevents 'collectcode' from working.")
     packageStartupMessage("  Please rename this 'sysprofile.do'.")
@@ -20,6 +21,8 @@ stata_collectcode <- function() {
   else {
     oprofile <- NULL
   }
+  knitr_frame <- if (utils::packageVersion('knitr') >= '1.45') -10L else -9L
+
   # Hook for code processing
   knitr::knit_hooks$set(collectcode = function(before, options, envir) {
     if (!before) {
@@ -35,26 +38,14 @@ stata_collectcode <- function() {
             close(autoexec)
 # print(sys.frames())
 # print(sys.calls())
-          if (utils::packageVersion('knitr') < '1.45') {
-              do.call("on.exit",
-                      list(quote(unlink("profile.do")), add=TRUE),
-                      envir = sys.frame(-9))
-            } else if (utils::packageVersion('knitr') >= '1.45') {
-              do.call("on.exit",
-                      list(quote(unlink("profile.do")), add=TRUE),
-                      envir = sys.frame(-10))
-            }
+          do.call("on.exit",
+                  list(quote(unlink("profile.do")), add=TRUE),
+                  envir = sys.frame(knitr_frame))
 
         if (!is.null(oprofile)) { # replace the original "profile.do"
-          if (utils::packageVersion('knitr') < '1.45') {
-            do.call("on.exit",
-                    list(quote(writeLines(oprofile, "profile.do")), add=TRUE),
-                    envir = sys.frame(-9))
-          } else if (utils::packageVersion('knitr') >= '1.45') {
-            do.call("on.exit",
-                    list(quote(writeLines(oprofile, "profile.do")), add=TRUE),
-                    envir = sys.frame(-10))
-          }
+          do.call("on.exit",
+                  list(quote(writeLines(oprofile, "profile.do")), add=TRUE),
+                  envir = sys.frame(knitr_frame))
 # sys.frame(1) or sys.frame(-10) is rmarkdown::render()
 # sys.frame(-9) is knitr::knit()
         }

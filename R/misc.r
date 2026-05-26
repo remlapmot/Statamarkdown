@@ -1,6 +1,6 @@
 # When the package loads
 .onAttach <- function (libname, pkgname) {
-  # Redfine the 'stata' engine
+  # Redefine the 'stata' engine
   knitr::knit_engines$set(stata=stata_engine)
 
   # Find the Stata executable
@@ -15,7 +15,7 @@
   knitr::opts_chunk$set(error=TRUE, cleanlog=TRUE, comment=NA, noisy=FALSE)
 
   # Hook to place collected chunk contents in a profile.do file
-  stata_collectcode()
+  stata_collectcode(stataexe)
 
   packageStartupMessage("The 'stata' engine is ready to use.")
 }
