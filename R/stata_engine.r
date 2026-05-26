@@ -28,12 +28,13 @@ stata_engine <- function (options)
     logf = sub("[.]do$", ".log", f)
     if (is.null(options$savedo) || options$savedo==FALSE)
       on.exit(unlink(logf), add = TRUE)
-    paste(switch(Sys.info()[["sysname"]],
+    sysname <- Sys.info()[["sysname"]]
+    paste(switch(sysname,
                  Windows = "/q /e do",
                  Darwin = "-q -e do",
                  Linux = "-q -b do",
                  "-q -b do"),
-          switch(Sys.info()[["sysname"]],
+          switch(sysname,
                  Windows = shQuote(normalizePath(f)),
                  Darwin = paste0("\'\"", normalizePath(f), "\"\'"),
                  Linux  = paste0("\'\"", normalizePath(f), "\"\'"),
@@ -42,7 +43,7 @@ stata_engine <- function (options)
 
   if (is.list(options$engine.opts)) {
     code = paste(options$engine.opts[[options$engine]], code, options$doargs)
-  } else { # backwards compatability
+  } else { # backwards compatibility
     code = paste(options$engine.opts, code, options$doargs)
   }
 # print(code)
@@ -50,12 +51,12 @@ stata_engine <- function (options)
   cmd = options$engine.path
   if (is.list(options$engine.path)) {
     cmd = options$engine.path[[options$engine]]
-  } else { # backwards compatability
+  } else { # backwards compatibility
     cmd = options$engine.path
   }
 
   out = if (!all(options$eval==FALSE)) {
-    if (!is.null(options$noisey) && options$noisey==TRUE) message("running: ", cmd, " ", code)
+    if (!is.null(options$noisy) && options$noisy==TRUE) message("running: ", cmd, " ", code)
     tryCatch(system2(cmd, code, stdout = TRUE, stderr = TRUE,
                      env = options$engine.env), error = function(e) {
                        if (!options$error)
