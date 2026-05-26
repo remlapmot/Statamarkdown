@@ -9,7 +9,7 @@ SystemRequirements: Stata
 Authors@R: c(
   person("Doug", "Hemken", email="d_hemken@yahoo.com", 
     role=c("aut", "cre"), comment="SSCC, Univ. of Wisconsin-Madison (retired)"),
-  person("Tom", "Palmer", role =c("aut", "cre"), comment="MacOS, linux"),
+  person("Tom", "Palmer", role ="aut", comment="MacOS, linux"),
   person("Philipp", "Lepert", role = "ctb")
   )
 Maintainer: Doug Hemken <d_hemken@yahoo.com>
