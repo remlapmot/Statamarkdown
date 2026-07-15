@@ -31,6 +31,7 @@ library(Statamarkdown)
 
 ```{r Statasetup, include=FALSE}
 library(Statamarkdown)
+havestata <- nzchar(find_stata(message = FALSE))
 ```
 
 Then, to switch languages, you just indicate the language in
@@ -45,7 +46,7 @@ regress mpg weight
 ```
 ````
 
-```{stata auto}
+```{stata auto, eval=havestata}
 sysuse auto
 regress mpg weight
 ```

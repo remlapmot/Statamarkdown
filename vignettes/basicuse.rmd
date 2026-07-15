@@ -9,6 +9,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=FALSE}
+havestata <- nzchar(Statamarkdown::find_stata(message = FALSE))
+```
+
 This discussion assumes you already have a basic understanding
 of Markdown for document formatting, Rmarkdown to include executable
 code in a document, and Stata to write the code.
@@ -59,7 +63,7 @@ A simple code chunk in Rmarkdown might look like:
     ```
 
 And in your document this would produce:
-```{stata example}
+```{stata example, eval=havestata}
 sysuse auto
 summarize
 ```
