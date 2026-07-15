@@ -27,8 +27,12 @@ stata_collectcode <- function(stataexe) {
   knitr::knit_hooks$set(collectcode = function(before, options, envir) {
     if (!before) {
         if (options$engine == "stata") {
-# print(options$engine.path$stata)
-          if (file.exists(file.path(dirname(options$engine.path$stata), "profile.do"))) {
+          enginepath <- if (is.list(options$engine.path)) {
+            options$engine.path$stata
+          } else { # backwards compatibility
+            options$engine.path
+          }
+          if (!is.null(enginepath) && file.exists(file.path(dirname(enginepath), "profile.do"))) {
             packageStartupMessage("Found a 'profile.do' in the STATA executable directory.")
             packageStartupMessage("  This prevents 'collectcode' from working properly.")
             packageStartupMessage("  Please rename this 'sysprofile.do'.")
