@@ -18,7 +18,7 @@ you are in the process of learning a new language, or if part of
 your work involves a specialized language with limited capabilities.
 
 ## Some Setup for Stata
-Some initial set up is required to use Stata to process commands. 
+Some initial setup is required to use Stata to process commands.
 You would include an initial fenced code block (\"code chunk\")
 to do this.  Use the `include=FALSE`
 chunk option to hide this from your readers.
