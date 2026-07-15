@@ -3,7 +3,7 @@ Version: 0.9.7
 Title: 'Stata' Markdown
 Description: Settings and functions to extend the 'knitr' 'Stata' engine.
 Imports: knitr (>= 1.43), xfun (>= 0.39)
-Suggests: markdown, quarto, rmarkdown
+Suggests: markdown, quarto, rmarkdown, testthat (>= 3.0.0), withr
 SystemRequirements: Stata
 Authors@R: c(
   person("Doug", "Hemken", email="d_hemken@yahoo.com", 
@@ -16,3 +16,4 @@ URL: https://github.com/Hemken/Statamarkdown/
 BugReports: https://github.com/Hemken/Statamarkdown/issues
 VignetteBuilder: quarto
 Encoding: UTF-8
+Config/testthat/edition: 3
