@@ -18,7 +18,7 @@ stata_engine_output <- function(x, options) {
       y <- x
 
       # Remove command echo in Stata log
-      if ((is.null(options$cleanlog) || length(options$cleanlog)==0) || options$cleanlog==TRUE) {
+      if (length(options$cleanlog)==0 || options$cleanlog==TRUE) {
 
         # Find command lines
         commandlines <- grep("^[[:space:]]?\\.[[:space:]]", y)

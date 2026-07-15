@@ -2,7 +2,7 @@ find_stata <- function(message=TRUE) {
   stataexe <- ""
   if (.Platform$OS.type == "windows"){
   for (d in c("C:/Program Files","C:/Program Files (x86)")) {
-    if (stataexe=="" & dir.exists(d)) {
+    if (stataexe=="" && dir.exists(d)) {
       for (v in seq(19,11,-1)) {
         for (dirstub in c("Stata", "StataNow")){
           dv <- paste(d, paste0(dirstub,v), sep="/")
