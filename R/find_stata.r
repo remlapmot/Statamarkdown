@@ -1,3 +1,49 @@
+#' Locate the Stata executable
+#'
+#' A helper function that seeks to locate your Stata executable.
+#' Ordinarily this is run automatically when \pkg{Statamarkdown} is loaded.
+#'
+#' This function searches for recent versions of Stata (>= Stata 11),
+#' in some of the usual default installation locations.
+#'
+#' If Stata is not found, you will have to specify its
+#' correct location yourself.
+#'
+#' @param message (logical) Whether or not to print a message
+#'   when Stata is found.
+#'
+#' @return A character string with the path and name of the Stata executable.
+#'
+#' @author Doug Hemken
+#'
+#' @seealso [Statamarkdown-package]
+#'
+#' @export
+#'
+#' @examples
+#' indoc <- '
+#' # An R console example
+#' ## In a first code chunk, set up with
+#' ```{r}
+#' library(Statamarkdown)
+#' ```
+#'
+#' ## Then mark Stata code chunks with
+#' ```{stata}
+#' sysuse auto, clear
+#' generate gpm = 1/mpg
+#' summarize price gpm
+#' ```
+#' '
+#'
+#' if (nzchar(Statamarkdown::find_stata())) {
+#'   # To run this example, remove tempdir().
+#'   fmd <- file.path(tempdir(), "test.md")
+#'   fhtml <- file.path(tempdir(), "test.html")
+#'
+#'   knitr::knit(text=indoc, output=fmd)
+#'   rmarkdown::render(fmd, "html_document", fhtml)
+#' }
 find_stata <- function(message=TRUE) {
   stataexe <- ""
   if (.Platform$OS.type == "windows"){
