@@ -40,8 +40,10 @@ stata_engine_output <- function(x, options) {
         }
 
         # Some command lines have a leading space?
-        if (length(grep("^[[:space:]*]\\.", y))>0) {
-          y <- y[-(grep("^[[:space:]*]\\.", y))]
+        # Require whitespace (or end of line) after the dot so that
+        # output values such as " .5227" are not mistaken for commands
+        if (length(grep("^[[:space:]*]\\.([[:space:]]|$)", y))>0) {
+          y <- y[-(grep("^[[:space:]*]\\.([[:space:]]|$)", y))]
         }
       }
 
