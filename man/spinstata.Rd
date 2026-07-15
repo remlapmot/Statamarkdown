@@ -30,7 +30,7 @@ Special Markup:
 \item{\code{"/*' "} - Begin document text, ends with \code{"'*/"}}
 \item{\code{"/*+ "} - Begin chunk header, ends with \code{"+*/"}}
 \item{\code{"/*R "} - Begin a chunk of R code, ends with \code{"R*/"}}
-\item{\code{"*/* "} - Dropped from document, ends with
+\item{\code{"/** "} - Dropped from document, ends with
 \code{"*/*"}}
 }
 

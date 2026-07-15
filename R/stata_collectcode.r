@@ -14,9 +14,9 @@ stata_collectcode <- function(stataexe) {
     packageStartupMessage("Found a 'sysprofile.do'")
   }
   if (file.exists(file.path(statadir, "profile.do"))) {
-    packageStartupMessage("Found a 'profile.do' in the STATA executable directory.")
+    packageStartupMessage("Found a 'profile.do' in the Stata executable directory.")
     packageStartupMessage("  This prevents 'collectcode' from working.")
-    packageStartupMessage("  Please rename this 'sysprofile.do'.")
+    packageStartupMessage("  Please rename this to 'sysprofile.do'.")
   }
   if (file.exists("profile.do")){
     oprofile <- readLines("profile.do")
@@ -37,9 +37,9 @@ stata_collectcode <- function(stataexe) {
             options$engine.path
           }
           if (!is.null(enginepath) && file.exists(file.path(dirname(enginepath), "profile.do"))) {
-            packageStartupMessage("Found a 'profile.do' in the STATA executable directory.")
-            packageStartupMessage("  This prevents 'collectcode' from working properly.")
-            packageStartupMessage("  Please rename this 'sysprofile.do'.")
+            message("Found a 'profile.do' in the Stata executable directory.")
+            message("  This prevents 'collectcode' from working properly.")
+            message("  Please rename this to 'sysprofile.do'.")
           }
             autoexec <- file("profile.do", open="at")
             writeLines(options$code, autoexec)
