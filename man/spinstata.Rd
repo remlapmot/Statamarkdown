@@ -72,7 +72,7 @@ R*/
 
 /*' You can use the ***usual*** Markdown to mark up text.'*/
 "
-if (!is.null(Statamarkdown::find_stata())) {
+if (nzchar(Statamarkdown::find_stata())) {
   # To run this example, remove tempdir().
   fhtml <- file.path(tempdir(), "test.html")
   x<-Statamarkdown::spinstata(text=indoc)
