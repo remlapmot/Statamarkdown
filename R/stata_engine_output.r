@@ -22,22 +22,22 @@ stata_engine_output <- function(x, options) {
 
         # Find command lines
         commandlines <- grep("^[[:space:]]?\\.[[:space:]]", y)
-        # Loop commands appear on more than one line, with line numbers
         if (length(commandlines)>0) {
-          loopcommands <- grep("^[[:space:]]+[[:digit:]]+\\.", y)
+          # Loop commands appear on more than one line, with line numbers,
+          # and long command lines are wrapped, with an initial ">".
+          # Both may run over several lines, so keep adding lines that
+          # follow an already-identified command line until none are left.
+          followers <- c(grep("^[[:space:]]+[[:digit:]]+\\.", y),
+                         grep("^>[[:space:]]", y))
+          repeat {
+            newlines <- followers[!(followers %in% commandlines) &
+                                    (followers - 1L) %in% commandlines]
+            if (length(newlines)==0) break
+            commandlines <- c(commandlines, newlines)
+          }
+          # remove
+          y <- y[-(commandlines)]
         }
-        if (length(commandlines)>0 && length(loopcommands)>0) {
-          commandlines <- c(commandlines, loopcommands[(loopcommands - 1L) %in% commandlines])
-        }
-        # Long command lines are wrapped, with an initial ">"
-        if (length(commandlines)>0) {
-          continuations <- grep("^>[[:space:]]", y)
-        }
-        if (length(commandlines)>0 && length(continuations)>0) {
-          commandlines <- c(commandlines, continuations[(continuations - 1L) %in% commandlines])
-        }
-        # remove
-        if (length(commandlines)>0) {y <- y[-(commandlines)]}
 
         # Some command lines have a leading space?
         if (length(grep("^[[:space:]*]\\.", y))>0) {
