@@ -2,7 +2,6 @@
 \name{Statamarkdown-package}
 \alias{Statamarkdown-package}
 \alias{Statamarkdown}
-\alias{hook_orig}
 
 \title{Settings and functions to extend the knitr Stata engine.}
 

@@ -45,11 +45,10 @@ stata_engine <- function (options)
     code = paste(options$engine.opts, code, options$doargs)
   }
 
-  cmd = options$engine.path
-  if (is.list(options$engine.path)) {
-    cmd = options$engine.path[[options$engine]]
+  cmd = if (is.list(options$engine.path)) {
+    options$engine.path[[options$engine]]
   } else { # backwards compatibility
-    cmd = options$engine.path
+    options$engine.path
   }
 
   out = if (!all(options$eval==FALSE)) {
