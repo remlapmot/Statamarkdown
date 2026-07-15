@@ -67,7 +67,9 @@ spinstata <- function(statafile, text=NULL, keep=FALSE, ...) {
     #return(vtext)
 
     if (is.null(text)) {
-        rfile <- sub("[.]do$", ".r", statafile)
+        rfile <- sub("[.]do$", ".r", statafile, ignore.case=TRUE)
+        if (rfile == statafile)
+            stop("'statafile' must have a '.do' extension")
 
         writeLines(vtext, rfile)
         if (!keep)
