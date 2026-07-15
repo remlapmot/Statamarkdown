@@ -24,7 +24,7 @@ spinstata <- function(statafile, text=NULL, keep=FALSE, ...) {
     R_code     <- rep(0, length(vtext))
     R_code[1]  <- R_code[1] + R_start[1]
 
-    for (i in 2:length(vtext)) {
+    for (i in seq_along(vtext)[-1]) {
         md_block[i]   <- md_block[i-1]   + md_start[i]    - md_end[i-1]
         chunk_head[i] <- chunk_head[i-1] + chunk_start[i] - chunk_end[i-1]
         R_code[i]     <- R_code[i-1]     + R_start[i]     - R_end[i-1]
