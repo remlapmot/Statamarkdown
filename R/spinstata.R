@@ -184,13 +184,8 @@ spin_lang = function(
     x = paste(x, collapse = '\n')
     l = attr(gregexpr('`+', x)[[1]], 'match.length')
     l = max(l, 0)
-    if (length(l) > 0) {
-        i = spaces(l + 1, '`')
-        b = spaces(max(l + 1, 3), '`')
-    } else {
-        i = '`'
-        b = '```'
-    }
+    i = spaces(l + 1, '`')
+    b = spaces(max(l + 1, 3), '`')
     c(paste0(b, '{r '), '}', b, paste0(i, 'r \\1 ', i))
 }
 

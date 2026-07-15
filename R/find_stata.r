@@ -4,8 +4,7 @@ find_stata <- function(message=TRUE) {
 # if (message) packageStartupMessage("OS : Windows")
 #  stataexe <- NULL
   for (d in c("C:/Program Files","C:/Program Files (x86)")) {
-    if (stataexe=="" & dir.exists(d)) {
-# if (message) packageStartupMessage("trying : ", d)
+    if (stataexe=="" && dir.exists(d)) {
       for (v in seq(19,11,-1)) {
         for (dirstub in c("Stata", "StataNow")){
           dv <- paste(d, paste0(dirstub,v), sep="/")
@@ -75,4 +74,3 @@ find_stata <- function(message=TRUE) {
   }
   return(stataexe)
 }
-
