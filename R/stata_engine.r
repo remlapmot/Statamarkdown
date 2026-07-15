@@ -7,8 +7,6 @@ stata_engine <- function (options)
     } else {
       f <- basename(paste0(options$label, ".do"))
     }
-# print(options$code)
-# print(options$eval)
     if (is.numeric(options$eval)) {
       if (all(options$eval < 0)) {
         pre <- rep("", length(options$code))
@@ -46,7 +44,6 @@ stata_engine <- function (options)
   } else { # backwards compatibility
     code = paste(options$engine.opts, code, options$doargs)
   }
-# print(code)
 
   cmd = if (is.list(options$engine.path)) {
     options$engine.path[[options$engine]]
@@ -68,9 +65,5 @@ stata_engine <- function (options)
     stop(paste(out, collapse = "\n"))
   if (!all(options$eval==FALSE) && options$engine == "stata" && file.exists(logf))
     out = c(readLines(logf), out)
-# print("log file read")
-# print(out)
-# print(engine_output)
-# print(knitr::engine_output)
   engine_output(options, options$code, out)
 }
