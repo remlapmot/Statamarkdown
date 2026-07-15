@@ -150,7 +150,7 @@ spin_lang = function(
 
     txt = unlist(txt)
     # make it a complete TeX document if document class not specified
-    if (report && format %in% c('Rnw', 'Rtex') && !grepl('^\\s*\\\\documentclass', txt)) {
+    if (report && format %in% c('Rnw', 'Rtex') && length(grep('^\\s*\\\\documentclass', txt)) == 0L) {
         txt = c('\\documentclass{article}', '\\begin{document}', txt, '\\end{document}')
     }
     if (nosrc) {
