@@ -22,6 +22,7 @@ find_stata <- function(message=TRUE) {
               if (stataexe != "") break
               }
           }
+          if (stataexe != "") break
         }
        if (stataexe != "") break
       }
@@ -42,6 +43,7 @@ find_stata <- function(message=TRUE) {
         if (stataexe != "") break
       }
     }
+    if (stataexe != "") break
     }
   } else if (.Platform$OS.type == "unix") {
 #      stataexe <- NULL
