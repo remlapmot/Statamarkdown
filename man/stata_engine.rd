@@ -59,7 +59,7 @@ summarize price gpm
 ```
 '
 
-if (!is.null(Statamarkdown::find_stata())) {
+if (nzchar(Statamarkdown::find_stata())) {
   # To run this example, remove tempdir().
   fmd <- file.path(tempdir(), "test.md")
   fhtml <- file.path(tempdir(), "test.html")
