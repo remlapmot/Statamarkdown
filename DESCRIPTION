@@ -1,17 +1,21 @@
 Package: Statamarkdown
-Version: 0.9.8
 Title: 'Stata' Markdown
-Description: Settings and functions to extend the 'knitr' 'Stata' engine.
-Imports: knitr (>= 1.43), xfun (>= 0.39)
-Suggests: rmarkdown
-SystemRequirements: Stata
+Version: 0.9.8
 Authors@R: c(
-  person("Doug", "Hemken", email="d_hemken@yahoo.com", 
-    role=c("aut", "cre"), comment="SSCC, Univ. of Wisconsin-Madison (retired)"),
-  person("Tom", "Palmer", role ="aut", comment="MacOS, linux"),
-  person("Philipp", "Lepert", role = "ctb")
+    person("Doug", "Hemken", , "d_hemken@yahoo.com", role = c("aut", "cre"),
+           comment = "SSCC, Univ. of Wisconsin-Madison (retired)"),
+    person("Tom", "Palmer", role = "aut",
+           comment = "MacOS, linux"),
+    person("Philipp", "Lepert", role = "ctb")
   )
-Maintainer: Doug Hemken <d_hemken@yahoo.com>
+Description: Settings and functions to extend the 'knitr' 'Stata' engine.
 License: MIT + file LICENSE
+URL: https://github.com/Hemken/Statamarkdown/
 BugReports: https://github.com/Hemken/Statamarkdown/issues
+Imports: 
+    knitr (>= 1.43),
+    xfun (>= 0.39)
+Suggests: 
+    rmarkdown
 Encoding: UTF-8
+SystemRequirements: Stata
