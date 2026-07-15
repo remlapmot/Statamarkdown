@@ -14,7 +14,7 @@ stata_engine_output <- function(x, options) {
       x <- unlist(strsplit(noprofile, "\n"))
       # remove "end of do-file"
       endofdofile <- grep("end of do-file", x)
-      x <- x[-endofdofile]
+      if (length(endofdofile) > 0) x <- x[-endofdofile]
       y <- x
 
       # Remove command echo in Stata log
