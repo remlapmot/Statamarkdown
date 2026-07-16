@@ -4,12 +4,9 @@
   knitr::knit_engines$set(stata=stata_engine)
 
   # Find the Stata executable
+  # (find_stata() sets the engine.path chunk option and messages
+  #  if no executable is found)
   stataexe <- find_stata()
-  if (stataexe!="") {
-    knitr::opts_chunk$set(engine.path=list(stata=stataexe))
-  } else {
-    packageStartupMessage("No Stata executable found.")
-  }
 
   # Optimize chunk options
   knitr::opts_chunk$set(error=TRUE, cleanlog=TRUE, comment=NA, noisy=FALSE)

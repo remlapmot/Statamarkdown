@@ -2,7 +2,6 @@
 \name{Statamarkdown-package}
 \alias{Statamarkdown-package}
 \alias{Statamarkdown}
-\alias{hook_orig}
 
 \title{Settings and functions to extend the knitr Stata engine.}
 
@@ -12,9 +11,9 @@ library from \emph{within} the document to be \code{knit}.  A
 typical preliminary code check in a document would be
 
 \preformatted{
-    ```{r setup, include=FALSE}
-    library(Statamarkdown)
-    ```
+```{r setup, include=FALSE}
+library(Statamarkdown)
+```
 }
 
 Using the "Stata" language engine in \pkg{knitr} has a number of limitations.
@@ -24,7 +23,7 @@ This package provides a language engine with code chunk options
 to overcome these limitations.
 
 If you render multiple documents from the same script or R session,
-you should \code{detach("Statamarkdown")} in between documents.
+you should \code{detach("package:Statamarkdown")} in between documents.
 }
 
 \section{Code Block (Chunk) Options}{
@@ -50,12 +49,15 @@ are the same as the chunk label.
 }
 
 \subsection{Knitr Chunk Options}{
-\subsection{eval: (logical)}{Whether or not to evaluate
+\subsection{eval: (logical, numeric vector)}{Whether or not to evaluate
 the code in the code block.  Use \code{eval=FALSE} to show
 code to the reader without having it evaluated.
 
-Selective evaluation by specifying a numeric vector (an option
-for R code blocks) does \emph{not} work for Stata.
+Selective evaluation by specifying a numeric vector (as for
+R code blocks) is also supported: the vector must be either all
+positive (evaluate only these lines) or all negative (evaluate
+all but these lines).  Lines excluded from evaluation are
+commented out in the Stata do-file.
 }
 \subsection{include: (logical)}{Whether or not any trace
 of this code block appears in your document.  Use \code{include=FALSE}

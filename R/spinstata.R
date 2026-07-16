@@ -24,7 +24,7 @@ spinstata <- function(statafile, text=NULL, keep=FALSE, ...) {
     R_code     <- rep(0, length(vtext))
     R_code[1]  <- R_code[1] + R_start[1]
 
-    for (i in 2:length(vtext)) {
+    for (i in seq_along(vtext)[-1]) {
         md_block[i]   <- md_block[i-1]   + md_start[i]    - md_end[i-1]
         chunk_head[i] <- chunk_head[i-1] + chunk_start[i] - chunk_end[i-1]
         R_code[i]     <- R_code[i-1]     + R_start[i]     - R_end[i-1]
@@ -67,7 +67,9 @@ spinstata <- function(statafile, text=NULL, keep=FALSE, ...) {
     #return(vtext)
 
     if (is.null(text)) {
-        rfile <- sub("[.]do$", ".r", statafile)
+        rfile <- sub("[.]do$", ".r", statafile, ignore.case=TRUE)
+        if (rfile == statafile)
+            stop("'statafile' must have a '.do' extension")
 
         writeLines(vtext, rfile)
         if (!keep)
@@ -148,7 +150,7 @@ spin_lang = function(
 
     txt = unlist(txt)
     # make it a complete TeX document if document class not specified
-    if (report && format %in% c('Rnw', 'Rtex') && !grepl('^\\s*\\\\documentclass', txt)) {
+    if (report && format %in% c('Rnw', 'Rtex') && length(grep('^\\s*\\\\documentclass', txt)) == 0L) {
         txt = c('\\documentclass{article}', '\\begin{document}', txt, '\\end{document}')
     }
     if (nosrc) {
@@ -182,13 +184,8 @@ spin_lang = function(
     x = paste(x, collapse = '\n')
     l = attr(gregexpr('`+', x)[[1]], 'match.length')
     l = max(l, 0)
-    if (length(l) > 0) {
-        i = spaces(l + 1, '`')
-        b = spaces(max(l + 1, 3), '`')
-    } else {
-        i = '`'
-        b = '```'
-    }
+    i = spaces(l + 1, '`')
+    b = spaces(max(l + 1, 3), '`')
     c(paste0(b, '{r '), '}', b, paste0(i, 'r \\1 ', i))
 }
 

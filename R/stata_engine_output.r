@@ -10,38 +10,40 @@ stata_engine_output <- function(x, options) {
       #  Done as a single string because a deep folder path can create awkward line breaks
       #  within the word "profile"
       if (length(x) != 1) x = single_string(x)
-      noprofile <- sub("^.*[R|r]unning[[:space:]].*p(\\\n>[[:space:]])?r(\\\n>[[:space:]])?o(\\\n>[[:space:]])?f(\\\n>[[:space:]])?i(\\\n>[[:space:]])?l(\\\n>[[:space:]])?e(\\\n>[[:space:]])?\\.(\\\n>[[:space:]])?d(\\\n>[[:space:]])?o(\\\n>[[:space:]])?[[:space:]](\\\n>[[:space:]])?\\.(\\\n>[[:space:]])?\\.(\\\n>[[:space:]])?\\.[[:space:]]?[[:space:]]?", "", x)
+      noprofile <- sub("^.*[Rr]unning[[:space:]].*p(\\\n>[[:space:]])?r(\\\n>[[:space:]])?o(\\\n>[[:space:]])?f(\\\n>[[:space:]])?i(\\\n>[[:space:]])?l(\\\n>[[:space:]])?e(\\\n>[[:space:]])?\\.(\\\n>[[:space:]])?d(\\\n>[[:space:]])?o(\\\n>[[:space:]])?[[:space:]](\\\n>[[:space:]])?\\.(\\\n>[[:space:]])?\\.(\\\n>[[:space:]])?\\.[[:space:]]?[[:space:]]?", "", x)
       x <- unlist(strsplit(noprofile, "\n"))
       # remove "end of do-file"
       endofdofile <- grep("end of do-file", x)
-      x <- x[-endofdofile]
+      if (length(endofdofile) > 0) x <- x[-endofdofile]
       y <- x
 
       # Remove command echo in Stata log
-      if ((is.null(options$cleanlog) || length(options$cleanlog)==0) || options$cleanlog==TRUE) {
+      if (length(options$cleanlog)==0 || options$cleanlog==TRUE) {
 
         # Find command lines
         commandlines <- grep("^[[:space:]]?\\.[[:space:]]", y)
-        # Loop commands appear on more than one line, with line numbers
         if (length(commandlines)>0) {
-          loopcommands <- grep("^[[:space:]]+[[:digit:]]+\\.", y)
+          # Loop commands appear on more than one line, with line numbers,
+          # and long command lines are wrapped, with an initial ">".
+          # Both may run over several lines, so keep adding lines that
+          # follow an already-identified command line until none are left.
+          followers <- c(grep("^[[:space:]]+[[:digit:]]+\\.", y),
+                         grep("^>[[:space:]]", y))
+          repeat {
+            newlines <- followers[!(followers %in% commandlines) &
+                                    (followers - 1L) %in% commandlines]
+            if (length(newlines)==0) break
+            commandlines <- c(commandlines, newlines)
+          }
+          # remove
+          y <- y[-(commandlines)]
         }
-        if (length(commandlines)>0 && length(loopcommands)>0) {
-          commandlines <- c(commandlines, loopcommands[(loopcommands - 1L) %in% commandlines])
-        }
-        # Long command lines are wrapped, with an initial ">"
-        if (length(commandlines)>0) {
-          continuations <- grep("^>[[:space:]]", y)
-        }
-        if (length(commandlines)>0 && length(continuations)>0) {
-          commandlines <- c(commandlines, continuations[(continuations - 1L) %in% commandlines])
-        }
-        # remove
-        if (length(commandlines)>0) {y <- y[-(commandlines)]}
 
         # Some command lines have a leading space?
-        if (length(grep("^[[:space:]*]\\.", y))>0) {
-          y <- y[-(grep("^[[:space:]*]\\.", y))]
+        # Require whitespace (or end of line) after the dot so that
+        # output values such as " .5227" are not mistaken for commands
+        if (length(grep("^[[:space:]*]\\.([[:space:]]|$)", y))>0) {
+          y <- y[-(grep("^[[:space:]*]\\.([[:space:]]|$)", y))]
         }
       }
 

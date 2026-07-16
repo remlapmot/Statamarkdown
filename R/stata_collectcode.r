@@ -1,3 +1,12 @@
+# Find the frame of the outermost knitr::knit() call, so that cleanup
+# can be registered (via on.exit) to run when knitting completes
+knit_frame <- function() {
+  for (i in seq_len(sys.nframe())) {
+    if (identical(sys.function(i), knitr::knit)) return(sys.frame(i))
+  }
+  NULL
+}
+
 stata_collectcode <- function(stataexe) {
   # Message when Statamarkdown loads
   statadir <- dirname(stataexe)
@@ -5,50 +14,54 @@ stata_collectcode <- function(stataexe) {
     packageStartupMessage("Found a 'sysprofile.do'")
   }
   if (file.exists(file.path(statadir, "profile.do"))) {
-    packageStartupMessage("Found a 'profile.do' in the STATA executable directory.")
+    packageStartupMessage("Found a 'profile.do' in the Stata executable directory.")
     packageStartupMessage("  This prevents 'collectcode' from working.")
-    packageStartupMessage("  Please rename this 'sysprofile.do'.")
+    packageStartupMessage("  Please rename this to 'sysprofile.do'.")
   }
   if (file.exists("profile.do")){
-#    print(sys.frames())
-#    print(sys.calls())
-#    print(sys.nframe())
-    assign("oprofile", readLines("profile.do"), pos=2)
-#    oprofile <- readLines("profile.do")
+    oprofile <- readLines("profile.do")
     packageStartupMessage("Found an existing 'profile.do'")
     packageStartupMessage(paste("  ", oprofile, "\n"))
   }
   else {
     oprofile <- NULL
   }
-  knitr_frame <- if (utils::packageVersion('knitr') >= '1.45') -10L else -9L
 
   # Hook for code processing
   knitr::knit_hooks$set(collectcode = function(before, options, envir) {
     if (!before) {
         if (options$engine == "stata") {
-# print(options$engine.path$stata)
-          if (file.exists(file.path(dirname(options$engine.path$stata), "profile.do"))) {
-            packageStartupMessage("Found a 'profile.do' in the STATA executable directory.")
-            packageStartupMessage("  This prevents 'collectcode' from working properly.")
-            packageStartupMessage("  Please rename this 'sysprofile.do'.")
+          enginepath <- if (is.list(options$engine.path)) {
+            options$engine.path$stata
+          } else { # backwards compatibility
+            options$engine.path
+          }
+          if (!is.null(enginepath) && file.exists(file.path(dirname(enginepath), "profile.do"))) {
+            message("Found a 'profile.do' in the Stata executable directory.")
+            message("  This prevents 'collectcode' from working properly.")
+            message("  Please rename this to 'sysprofile.do'.")
           }
             autoexec <- file("profile.do", open="at")
             writeLines(options$code, autoexec)
             close(autoexec)
-# print(sys.frames())
-# print(sys.calls())
-          do.call("on.exit",
-                  list(quote(unlink("profile.do")), add=TRUE),
-                  envir = sys.frame(knitr_frame))
+          # Register cleanup to run when the document has finished
+          # knitting, locating the knitr::knit() frame on the call
+          # stack rather than assuming it sits at a fixed depth
+          knitframe <- knit_frame()
+          if (!is.null(knitframe)) {
+            do.call("on.exit",
+                    list(quote(unlink("profile.do")), add=TRUE),
+                    envir = knitframe)
 
-        if (!is.null(oprofile)) { # replace the original "profile.do"
-          do.call("on.exit",
-                  list(quote(writeLines(oprofile, "profile.do")), add=TRUE),
-                  envir = sys.frame(knitr_frame))
-# sys.frame(1) or sys.frame(-10) is rmarkdown::render()
-# sys.frame(-9) is knitr::knit()
-        }
+            if (!is.null(oprofile)) { # replace the original "profile.do"
+              # bquote() splices in the value of oprofile, so the cleanup
+              # expression does not depend on any name being visible in
+              # the knit frame when it eventually runs
+              do.call("on.exit",
+                      list(bquote(writeLines(.(oprofile), "profile.do")), add=TRUE),
+                      envir = knitframe)
+            }
+          }
         }
     }
 })

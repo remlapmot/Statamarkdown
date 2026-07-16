@@ -30,7 +30,7 @@ Special Markup:
 \item{\code{"/*' "} - Begin document text, ends with \code{"'*/"}}
 \item{\code{"/*+ "} - Begin chunk header, ends with \code{"+*/"}}
 \item{\code{"/*R "} - Begin a chunk of R code, ends with \code{"R*/"}}
-\item{\code{"*/* "} - Dropped from document, ends with
+\item{\code{"/** "} - Dropped from document, ends with
 \code{"*/*"}}
 }
 
@@ -72,7 +72,7 @@ R*/
 
 /*' You can use the ***usual*** Markdown to mark up text.'*/
 "
-if (!is.null(Statamarkdown::find_stata())) {
+if (nzchar(Statamarkdown::find_stata())) {
   # To run this example, remove tempdir().
   fhtml <- file.path(tempdir(), "test.html")
   x<-Statamarkdown::spinstata(text=indoc)

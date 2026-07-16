@@ -11,7 +11,7 @@ install.packages("Statamarkdown")
 
 or from GitHub:
 ```
-devtools::install_github("Hemken/Statamarkdown")
+remotes::install_github("Hemken/Statamarkdown")
 ```
 
 You can check your installation with
@@ -22,8 +22,8 @@ example("stata_engine", package="Statamarkdown")
 If the package was installed, you should see an example created in a
 temporary directory.
 
-Additional documentation can be found at https://www.ssc.wisc.edu/~hemken/Stataworkshops/Statamarkdown/stata-and-r-markdown.html .
+Additional documentation can be found at <https://www.ssc.wisc.edu/~hemken/Stataworkshops/Statamarkdown/stata-and-r-markdown.html> .
 
-If you would like to contribute to this project, please "fork" it on Github and then clone it back to your computer.  Make your changes and enhancements, push them back to your Github repository, then initiate a "pull" request.
+If you would like to contribute to this project, please "fork" it on GitHub and then clone it back to your computer.  Make your changes and enhancements, push them back to your GitHub repository, then initiate a "pull" request.
 
 You are also welcome to open issues, or email me directly.
