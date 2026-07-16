@@ -11,7 +11,7 @@ install.packages("Statamarkdown")
 
 or from GitHub:
 ```
-devtools::install_github("Hemken/Statamarkdown")
+remotes::install_github("Hemken/Statamarkdown")
 ```
 
 You can check your installation with
