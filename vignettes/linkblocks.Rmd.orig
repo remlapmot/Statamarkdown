@@ -33,11 +33,13 @@ the new variable.
 ### First code block:
 In the first code chunk, use the `collectcode` option.
 
-    ```{stata first-Stata, collectcode=TRUE}`r ''`
-    sysuse auto, clear
-    generate gpm = 1/mpg
-    summarize price gpm
-    ```
+````
+```{stata first-Stata, collectcode=TRUE}`r "\x60r ''\x60"`
+sysuse auto, clear
+generate gpm = 1/mpg
+summarize price gpm
+```
+````
 
 Which looks like this in your document:
 ```{stata first-Stata, collectcode=TRUE}
@@ -49,10 +51,12 @@ summarize price gpm
 ### Second code block:
 Then you can use the data and the new variable in a later code chunk.
 
-    ```{stata second-Stata}`r ''`
-    regress price gpm
-    ```
-    
+````
+```{stata second-Stata}`r "\x60r ''\x60"`
+regress price gpm
+```
+````
+
 Which looks like this in your document:
 ```{stata second-Stata}
 regress price gpm
