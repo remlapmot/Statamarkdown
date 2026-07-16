@@ -24,7 +24,7 @@ to do this.  Use the `include=FALSE`
 chunk option to hide this from your readers.
 
 ````
-```{r Statasetup}`r ''`
+```{r Statasetup}`r "\x60r ''\x60"`
 library(Statamarkdown)
 ```
 ````
@@ -39,7 +39,7 @@ the code fence.
 ## Using Stata 
 
 ````
-```{stata auto}`r ''`
+```{stata auto}`r "\x60r ''\x60"`
 sysuse auto
 regress mpg weight
 ```
@@ -53,7 +53,7 @@ regress mpg weight
 ## Using R
 
 ````
-```{r cars}`r ''`
+```{r cars}`r "\x60r ''\x60"`
 summary(lm(mpg ~ wt, data=mtcars))
 ```
 ````
