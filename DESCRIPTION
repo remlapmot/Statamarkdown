@@ -12,5 +12,6 @@ Authors@R: c(
   person("Philipp", "Lepert", role = "ctb")
   )
 License: MIT + file LICENSE
+URL: https://github.com/Hemken/Statamarkdown/
 BugReports: https://github.com/Hemken/Statamarkdown/issues
 Encoding: UTF-8
