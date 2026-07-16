@@ -14,4 +14,5 @@ Authors@R: c(
 License: MIT + file LICENSE
 URL: https://github.com/Hemken/Statamarkdown/
 BugReports: https://github.com/Hemken/Statamarkdown/issues
+VignetteBuilder: knitr
 Encoding: UTF-8
