@@ -16,7 +16,7 @@ code in a document, and Stata to write the code.
 ## First attach the `Statamarkdown` library
 Your first code chunk will look something like this:
 
-    ```{r library}`r ''`
+    ```{r library}`r "\x60r ''\x60"`
     library(Statamarkdown)
     ```
     
@@ -53,7 +53,7 @@ path a default chunk option.
 ## Then set up Stata code chunks.
 A simple code chunk in Rmarkdown might look like:
 
-    ```{stata example}`r ''`
+    ```{stata example}`r "\x60r ''\x60"`
     sysuse auto
     summarize
     ```
