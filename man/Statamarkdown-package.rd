@@ -11,9 +11,9 @@ library from \emph{within} the document to be \code{knit}.  A
 typical preliminary code check in a document would be
 
 \preformatted{
-    ```{r setup, include=FALSE}
-    library(Statamarkdown)
-    ```
+```{r setup, include=FALSE}
+library(Statamarkdown)
+```
 }
 
 Using the "Stata" language engine in \pkg{knitr} has a number of limitations.
