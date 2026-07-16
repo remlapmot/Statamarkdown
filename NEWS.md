@@ -12,3 +12,4 @@
 * Removed a duplicated "No Stata executable found" startup message when attaching the package without Stata installed.
 * Minor performance improvements: the Stata executable is located once at package load, and per-chunk processing avoids repeated system calls and redundant vector allocations.
 * Change of maintainer to Tom Palmer. Many thanks to Doug Hemken for creating and maintaining this amazing package.
+* Add the precomputed vignettes to the distributed CRAN package
