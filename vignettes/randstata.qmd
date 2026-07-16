@@ -2,17 +2,17 @@
 title: "Combining Stata and R"
 author: "Doug Hemken"
 date: "Jul 2026"
-output: rmarkdown::html_vignette
+format: html
 vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Combining Stata and R}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
 
 One of the virtues of processing your dynamic documents through R
 is that you can use more than one programming language in a single
-document.  Many of us are multi-lingual, and it is often quicker 
-and easier to execute part of a project in one language, while 
+document.  Many of us are multi-lingual, and it is often quicker
+and easier to execute part of a project in one language, while
 completing your work in another.  This is especially common when
 you are in the process of learning a new language, or if part of
 your work involves a specialized language with limited capabilities.
@@ -23,25 +23,21 @@ You would include an initial fenced code block (\"code chunk\")
 to do this.  Use the `include=FALSE`
 chunk option to hide this from your readers.
 
-````
-```{r Statasetup}`r ''`
+```{{r Statasetup}}
 library(Statamarkdown)
 ```
-````
 
 
 
 Then, to switch languages, you just indicate the language in
 the code fence.
 
-## Using Stata 
+## Using Stata
 
-````
-```{stata auto}`r ''`
+```{{stata auto}}
 sysuse auto
 regress mpg weight
 ```
-````
 
 
 ``` stata
@@ -69,11 +65,9 @@ regress mpg weight
 
 ## Using R
 
-````
-```{r cars}`r ''`
+```{{r cars}}
 summary(lm(mpg ~ wt, data=mtcars))
 ```
-````
 
 
 ``` r

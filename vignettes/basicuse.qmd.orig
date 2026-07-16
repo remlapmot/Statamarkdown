@@ -2,10 +2,10 @@
 title: "Basic Use of Statamarkdown"
 author: "Doug Hemken"
 date: "`r format(Sys.Date(), '%b %Y')`"
-output: rmarkdown::html_vignette
+format: html
 vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Basic Use of Statamarkdown}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -16,10 +16,10 @@ code in a document, and Stata to write the code.
 ## First attach the `Statamarkdown` library
 Your first code chunk will look something like this:
 
-    ```{r library}`r "\x60r ''\x60"`
-    library(Statamarkdown)
-    ```
-    
+```{{r library}}
+library(Statamarkdown)
+```
+
 This will either report that Stata was found, or
 that you need to specify its location yourself.
 ```{r library}
@@ -41,9 +41,9 @@ knitr::opts_chunk$set(engine.path = list(stata = stataexe))
 ```
 
 If you do not know where to find your Stata executable (app),
-open Stata and issue the command `sysdir`.  The line labeled 
-`STATA: ` is the folder where your Stata executable is located. 
-You can browse there with your computer\'s file explorer to 
+open Stata and issue the command `sysdir`.  The line labeled
+`STATA: ` is the folder where your Stata executable is located.
+You can browse there with your computer\'s file explorer to
 see the actual file name of the Stata executable, which varies
 by operating system, Stata version, and Stata flavor.
 
@@ -53,10 +53,10 @@ path a default chunk option.
 ## Then set up Stata code chunks.
 A simple code chunk in Rmarkdown might look like:
 
-    ```{stata example}`r "\x60r ''\x60"`
-    sysuse auto
-    summarize
-    ```
+```{{stata example}}
+sysuse auto
+summarize
+```
 
 And in your document this would produce:
 ```{stata example}
