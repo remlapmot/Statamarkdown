@@ -71,7 +71,8 @@ R*/
 
 /*' You can use the ***usual*** Markdown to mark up text.'*/
 "
-if (nzchar(Statamarkdown::find_stata())) {
+if (nzchar(Statamarkdown::find_stata()) &&
+    requireNamespace("markdown", quietly = TRUE)) {
   # To run this example, remove tempdir().
   fhtml <- file.path(tempdir(), "test.html")
   # Spin in a fresh R process, so that stale knitr state in a
