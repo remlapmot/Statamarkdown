@@ -45,7 +45,8 @@ summarize price gpm
 ```
 '
 
-if (nzchar(Statamarkdown::find_stata())) {
+if (nzchar(Statamarkdown::find_stata()) &&
+    requireNamespace("rmarkdown", quietly = TRUE)) {
   # To run this example, remove tempdir().
   frmd <- file.path(tempdir(), "test.Rmd")
   fhtml <- file.path(tempdir(), "test.html")
