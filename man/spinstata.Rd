@@ -48,7 +48,6 @@ Doug Hemken
 \code{\link{Statamarkdown-package}}
 }
 \examples{
-\dontrun{
 indoc <- "/*'
 # Statamarkdown Example
 
@@ -83,7 +82,6 @@ if (nzchar(Statamarkdown::find_stata())) {
     args = list(indoc)
   )
   writeLines(x, fhtml)
-}
   message("HTML output created at: ", fhtml)
   if (interactive()) utils::browseURL(fhtml)
 }
