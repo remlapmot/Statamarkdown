@@ -83,7 +83,11 @@ if (nzchar(Statamarkdown::find_stata())) {
   )
   writeLines(x, fhtml)
   message("HTML output created at: ", fhtml)
-  if (interactive()) utils::browseURL(fhtml)
+  if (interactive()) {
+    # Show in the RStudio Viewer pane if available, otherwise the browser
+    viewer <- getOption("viewer", default = utils::browseURL)
+    viewer(fhtml)
+  }
 }
 
 }

@@ -61,7 +61,11 @@ if (nzchar(Statamarkdown::find_stata())) {
     args = list(indoc, fmd, fhtml)
   )
   message("HTML output created at: ", fhtml)
-  if (interactive()) utils::browseURL(fhtml)
+  if (interactive()) {
+    # Show in the RStudio Viewer pane if available, otherwise the browser
+    viewer <- getOption("viewer", default = utils::browseURL)
+    viewer(fhtml)
+  }
 }
 }
 
