@@ -61,18 +61,18 @@ summarize price gpm
 
 if (nzchar(Statamarkdown::find_stata())) {
   # To run this example, remove tempdir().
-  fmd <- file.path(tempdir(), "test.md")
+  frmd <- file.path(tempdir(), "test.Rmd")
   fhtml <- file.path(tempdir(), "test.html")
 
   # Knit and render in a fresh R process, so that stale knitr state in a
   # long-running session (e.g. from RStudio's "Run examples" button)
   # cannot interfere with how the document text is parsed.
   xfun::Rscript_call(
-    function(indoc, fmd, fhtml) {
-      knitr::knit(text = indoc, output = fmd)
-      rmarkdown::render(fmd, "html_document", fhtml)
+    function(indoc, frmd, fhtml) {
+      writeLines(indoc, frmd)
+      rmarkdown::render(frmd, "html_document", fhtml)
     },
-    args = list(indoc, fmd, fhtml)
+    args = list(indoc, frmd, fhtml)
   )
   message("HTML output created at: ", fhtml)
   if (interactive()) {
