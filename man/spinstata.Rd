@@ -75,7 +75,13 @@ R*/
 if (nzchar(Statamarkdown::find_stata())) {
   # To run this example, remove tempdir().
   fhtml <- file.path(tempdir(), "test.html")
-  x<-Statamarkdown::spinstata(text=indoc)
+  # Spin in a fresh R process, so that stale knitr state in a
+  # long-running session (e.g. from RStudio's "Run examples" button)
+  # cannot interfere with how the document text is parsed.
+  x <- xfun::Rscript_call(
+    function(indoc) Statamarkdown::spinstata(text = indoc),
+    args = list(indoc)
+  )
   writeLines(x, fhtml)
 }
 }

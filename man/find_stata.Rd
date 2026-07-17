@@ -50,8 +50,16 @@ if (nzchar(Statamarkdown::find_stata())) {
   fmd <- file.path(tempdir(), "test.md")
   fhtml <- file.path(tempdir(), "test.html")
 
-  knitr::knit(text=indoc, output=fmd)
-  rmarkdown::render(fmd, "html_document", fhtml)
+  # Knit and render in a fresh R process, so that stale knitr state in a
+  # long-running session (e.g. from RStudio's "Run examples" button)
+  # cannot interfere with how the document text is parsed.
+  xfun::Rscript_call(
+    function(indoc, fmd, fhtml) {
+      knitr::knit(text = indoc, output = fmd)
+      rmarkdown::render(fmd, "html_document", fhtml)
+    },
+    args = list(indoc, fmd, fhtml)
+  )
 }
 }
 
