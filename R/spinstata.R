@@ -94,6 +94,11 @@ spin_lang = function(
 ) {
 
     format = match.arg(format)
+    # Fail early: compiling Rmd to HTML with knitr::knit2html() below needs
+    # the markdown package, which knitr only suggests
+    if (knit && report && format == 'Rmd' && !requireNamespace('markdown', quietly = TRUE))
+        stop("The 'markdown' package is required to compile the document to HTML.\n",
+             "  Please install it with install.packages('markdown').")
     x = if (nosrc <- is.null(text)) xfun::read_utf8(hair) else xfun::split_lines(text)
     stopifnot(length(comment) == 2L)
     c1 = grep(comment[1], x); c2 = grep(comment[2], x)
