@@ -13,3 +13,72 @@
 * Minor performance improvements: the Stata executable is located once at package load, and per-chunk processing avoids repeated system calls and redundant vector allocations.
 * Change of maintainer to Tom Palmer. Many thanks to Doug Hemken for creating and maintaining this amazing package.
 * Add the precomputed vignettes to the distributed CRAN package
+
+# Statamarkdown 0.9.6
+
+* `find_stata()` now searches `/Applications/StataNow` on macOS, the StataNow directories on Windows, and two additional installation directories on Linux.
+* Fixed bugs in the Windows directory search.
+* Fixed help file cross-reference links for the new CRAN standard.
+
+# Statamarkdown 0.9.4
+
+* Updated `find_stata()` for Stata 19 and the SSCC installation path.
+
+# Statamarkdown 0.9.3
+
+* GitHub-only release, not published on CRAN.
+* Updated `find_stata()` for Stata 19.
+
+# Statamarkdown 0.9.2
+
+* Cleaner Stata log output, and the log cleanup now accounts for unset chunk options.
+* Fixed the `collectcode` chunk option for knitr >= 1.45.
+* Package setup switched from `.onAttach()` to `.onLoad()`.
+* Cleaned up package dependencies and other CRAN submission issues.
+
+# Statamarkdown 0.8.0
+
+* Thoroughly reworked engine output processing and package loading.
+* Edited the vignettes.
+
+# Statamarkdown 0.7.4
+
+* Fixed handling of Stata executable paths containing spaces on macOS and Unix.
+* Updated the required knitr version.
+
+# Statamarkdown 0.7.3
+
+* GitHub-only release, not published on CRAN.
+* Updated `find_stata()` for Stata 18.
+* Improved the help file examples, in particular for `spinstata()`.
+* Changed the vignette rendering, and pointed the README to CRAN.
+
+# Statamarkdown 0.7.2
+
+* Better removal of the "Running .../profile.do" line from the log for long installation paths.
+* Added further Unix installation paths to `find_stata()`, suggested by Tom Palmer.
+
+# Statamarkdown 0.7.1
+
+* GitHub-only release, not published on CRAN.
+* Improved the `find_stata()` directory search on Linux, using `Sys.which()`.
+
+# Statamarkdown 0.7.0
+
+* GitHub-only release, not published on CRAN.
+* Updated `find_stata()` for Stata 17, with macOS fixes.
+* Fixed a problem with factor variable names.
+
+# Statamarkdown 0.6.0
+
+* GitHub-only release, not published on CRAN.
+* Cleaned up messages in "notebook" mode.
+* Fixed a macOS path problem, and added StataIC to the macOS search.
+* Fixed log cleanup of the "Running ..." line for Stata 16, and the `eval` chunk option.
+* Prebuilt the vignettes for the binary version of the package.
+* Added Philipp Lepert as a contributor.
+
+# Statamarkdown 0.4.4
+
+* GitHub-only release, not published on CRAN.
+* First tagged release: a knitr language engine for Stata with cleaned log output, the `collectcode` chunk option for linking code blocks, `spinstata()` for spinning specially marked-up Stata do-files into reports, and `find_stata()` to locate the Stata executable on Windows, macOS, and Linux.
