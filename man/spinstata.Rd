@@ -84,6 +84,8 @@ if (nzchar(Statamarkdown::find_stata())) {
   )
   writeLines(x, fhtml)
 }
+  message("HTML output created at: ", fhtml)
+  if (interactive()) utils::browseURL(fhtml)
 }
 
 }

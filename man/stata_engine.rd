@@ -74,5 +74,7 @@ if (nzchar(Statamarkdown::find_stata())) {
     },
     args = list(indoc, fmd, fhtml)
   )
+  message("HTML output created at: ", fhtml)
+  if (interactive()) utils::browseURL(fhtml)
 }
 }
