@@ -4,3 +4,4 @@
 ^\.claude$
 ^vignettes/.*\.orig$
 ^vignettes/render_vignette_source\.R$
+^justfile$
