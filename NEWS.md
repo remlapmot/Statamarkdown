@@ -1,3 +1,13 @@
+# Statamarkdown (development version)
+
+* Switch from including the html docs files to including them within the package as precomputed vignettes using Quarto.
+* Tweak helpfile examples such that they run within RStudio.
+* Add markdown to Suggests dependencies because it is needed for a code path within spinstata (in fact the one in that helpfile).
+* Guard two of the helpfile examples for the presence of the rmarkdown package.
+* Only activate nocommands, nooutput and quietly when set to `TRUE`
+* Add some tests
+* Convert documentation to use roxygen2
+
 # Statamarkdown 0.9.7
 
 * Fixed loss of all chunk output when the Stata log does not contain an "end of do-file" line.
