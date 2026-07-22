@@ -4,7 +4,7 @@
 \alias{purl_stata}
 \title{Extract Stata code from a dynamic document}
 \usage{
-purl_stata(input, output = NULL, text = NULL, documentation = TRUE)
+purl_stata(input, output = NULL, text = NULL, documentation = 1L)
 }
 \arguments{
 \item{input}{A character string with the name of the input document.}
@@ -16,9 +16,12 @@ extension changed to \code{.do}.}
 \item{text}{A character string with the document text to use in
 place of a file.}
 
-\item{documentation}{(logical) Whether to precede the code of each
+\item{documentation}{How much documentation to carry into the
+do-file, following \code{\link[knitr:purl]{knitr::purl()}}: \code{0} (or \code{FALSE}) extracts the
+code only; \code{1} (or \code{TRUE}, the default) precedes the code of each
 chunk with a Stata comment giving the chunk's header (its label
-and options).}
+and options); \code{2} also includes the document's text as Stata
+comments (the code of non-Stata chunks is not included).}
 }
 \value{
 If a do-file is written, the path to the do-file, invisibly.

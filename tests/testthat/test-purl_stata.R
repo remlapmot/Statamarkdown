@@ -112,3 +112,28 @@ test_that("output must differ from input", {
   writeLines(indoc, "doc.Rmd")
   expect_error(purl_stata("doc.Rmd", output = "doc.Rmd"), "different")
 })
+
+test_that("documentation = 2 includes the document text as comments", {
+  res <- purl_stata(text = indoc, documentation = 2)
+
+  # prose becomes Stata comments
+  expect_true(any(grepl("* Some text.", res, fixed = TRUE)))
+  # code is not commented
+  expect_true(any(grepl("^sysuse auto, clear$", res)))
+  # non-Stata chunk code is still excluded
+  expect_false(any(grepl("library(Statamarkdown)", res, fixed = TRUE)))
+  # blank lines stay blank rather than becoming "* "
+  expect_false(any(grepl("^\\*\\s*$", res)))
+})
+
+test_that("documentation = 0 and FALSE give code only", {
+  expect_identical(purl_stata(text = indoc, documentation = 0),
+                   purl_stata(text = indoc, documentation = FALSE))
+  res <- purl_stata(text = indoc, documentation = 0)
+  expect_false(any(grepl("^\\*", res)))
+})
+
+test_that("invalid documentation values error", {
+  expect_error(purl_stata(text = indoc, documentation = 3), "documentation")
+  expect_error(purl_stata(text = indoc, documentation = "yes"), "documentation")
+})

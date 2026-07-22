@@ -18,9 +18,12 @@
 #'   extension changed to `.do`.
 #' @param text A character string with the document text to use in
 #'   place of a file.
-#' @param documentation (logical) Whether to precede the code of each
+#' @param documentation How much documentation to carry into the
+#'   do-file, following [knitr::purl()]: `0` (or `FALSE`) extracts the
+#'   code only; `1` (or `TRUE`, the default) precedes the code of each
 #'   chunk with a Stata comment giving the chunk's header (its label
-#'   and options).
+#'   and options); `2` also includes the document's text as Stata
+#'   comments (the code of non-Stata chunks is not included).
 #'
 #' @return If a do-file is written, the path to the do-file, invisibly.
 #'   If `text` is given and `output` is `NULL`, a character vector of
@@ -48,7 +51,13 @@
 #' ```
 #' '
 #' purl_stata(text = indoc)
-purl_stata <- function(input, output = NULL, text = NULL, documentation = TRUE) {
+purl_stata <- function(input, output = NULL, text = NULL, documentation = 1L) {
+  doc <- if (isTRUE(documentation)) 1L else if (isFALSE(documentation)) 0L
+    else documentation
+  if (!(is.numeric(doc) && length(doc) == 1L && doc %in% 0:2))
+    stop("'documentation' must be 0 (or FALSE), 1 (or TRUE), or 2")
+  doc <- as.integer(doc)
+
   if (is.null(text)) {
     x <- xfun::read_utf8(input)
     if (is.null(output)) output <- xfun::with_ext(input, "do")
@@ -63,12 +72,20 @@ purl_stata <- function(input, output = NULL, text = NULL, documentation = TRUE) 
   begin <- grep(pat$chunk.begin, x)
   end <- grep(pat$chunk.end, x)
 
+  # document text as Stata comments, keeping blank lines blank
+  comment_out <- function(lines) {
+    ifelse(nzchar(trimws(lines)), paste("*", lines), lines)
+  }
+
   res <- character()
+  nstata <- 0L
   pos <- 0L
   for (b in begin) {
     if (b <= pos) next # inside the previous chunk
     e <- end[end > b][1L]
     if (is.na(e)) break # unclosed chunk
+    if (doc >= 2L && b - pos > 1L) # the text between chunks
+      res <- c(res, comment_out(x[(pos + 1L):(b - 1L)]))
     pos <- e
 
     # the chunk header: engine, label and options inside the braces
@@ -88,12 +105,16 @@ purl_stata <- function(input, output = NULL, text = NULL, documentation = TRUE) 
     }
     if (any(grepl("(purl|eval)\\s*:\\s*false", opts))) next
 
-    if (documentation) code <- c(paste0("* ---- ", header, " ----"), code)
+    if (doc >= 1L) code <- c(paste0("* ---- ", header, " ----"), code)
+    nstata <- nstata + 1L
     res <- c(res, code, "")
   }
-  res <- res[-length(res)] # drop the trailing blank line
+  if (doc >= 2L && pos < length(x)) # the text after the last chunk
+    res <- c(res, comment_out(x[(pos + 1L):length(x)]))
+  # drop a trailing blank line
+  if (length(res) && !nzchar(res[length(res)])) res <- res[-length(res)]
 
-  if (length(res) == 0L) {
+  if (nstata == 0L) {
     warning("No Stata code chunks found in the document")
     return(invisible(character()))
   }
