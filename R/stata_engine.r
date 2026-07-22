@@ -1,3 +1,90 @@
+#' Define a Stata engine for knitr
+#'
+#' This function creates a modified Stata engine.
+#'
+#' Set up once per session (i.e. document).  Ordinarily this is run
+#' automatically when \pkg{Statamarkdown} is loaded.
+#'
+#' `stata_engine(options)` is a language engine that returns Stata
+#' log output.  The end user should not need to use the language
+#' engine function directly.  This is the workhorse function that
+#' actually calls Stata and returns output.
+#'
+#' @section Including Stata graphs:
+#'
+#' Setting the chunk option `stata.fig=TRUE` exports the graph drawn
+#' by the chunk (Stata's current graph) to a figure file, and includes
+#' it in the output document.  The figure is laid out by knitr's
+#' usual plot machinery, so the standard figure chunk options apply,
+#' including `fig.cap` (the figure caption), `fig.alt` (the
+#' alternative text, for accessibility; falling back to `fig.cap` if
+#' unset), `out.width`, `out.height`, `fig.align`, `fig.link` and
+#' `fig.path`.
+#'
+#' The export format is controlled with the `stata.fig.format` chunk
+#' option, and defaults to `"svg"`, which Stata can export on all
+#' platforms in batch mode (including console Stata on Linux, which
+#' cannot export PNG).  For PDF/LaTeX output set, for example,
+#' `stata.fig.format="pdf"`.
+#'
+#' Note that knitr's `fig.width`, `fig.height` and `dpi` options
+#' control R's graphics devices and have no effect on Stata graphs;
+#' set the graph size in Stata, for example with the `xsize()` and
+#' `ysize()` options to `graph display`.  One graph is exported per
+#' chunk; to include several graphs, draw them in separate chunks
+#' (using `collectcode=TRUE` to carry the data over).
+#'
+#' @param options Chunk options, passed to the engine function
+#'   when it is actually invoked within \pkg{knitr}.
+#'
+#' @return The language engine function returns Stata code
+#'   and output internally to \pkg{knitr}.
+#'
+#' @author Doug Hemken
+#'
+#' @seealso [knitr::knit_engines]
+#'
+#' @export
+#'
+#' @examples
+#' indoc <- '
+#' # An R console example
+#' ## In a first code chunk, set up with
+#' ```{r}
+#' library(Statamarkdown)
+#' ```
+#'
+#' ## Then mark Stata code chunks with
+#' ```{stata}
+#' sysuse auto, clear
+#' generate gpm = 1/mpg
+#' summarize price gpm
+#' ```
+#' '
+#'
+#' if (nzchar(Statamarkdown::find_stata()) &&
+#'     requireNamespace("rmarkdown", quietly = TRUE)) {
+#'   # To run this example, remove tempdir().
+#'   frmd <- file.path(tempdir(), "test.Rmd")
+#'   fhtml <- file.path(tempdir(), "test.html")
+#'
+#'   # Knit and render in a fresh R process, so that stale knitr state in a
+#'   # long-running session (e.g. from RStudio's "Run examples" button)
+#'   # cannot interfere with how the document text is parsed.
+#'   xfun::Rscript_call(
+#'     function(indoc, frmd, fhtml) {
+#'       writeLines(indoc, frmd)
+#'       rmarkdown::render(frmd, "html_document", fhtml)
+#'     },
+#'     args = list(indoc, frmd, fhtml)
+#'   )
+#'   message("HTML output created at: ", fhtml)
+#'   if (interactive()) {
+#'     # Show in the RStudio Viewer pane if available, otherwise the browser
+#'     viewer <- getOption("viewer", default = utils::browseURL)
+#'     viewer(fhtml)
+#'   }
+#' }
 stata_engine <- function (options)
 {
   code <- {
@@ -7,8 +94,6 @@ stata_engine <- function (options)
     } else {
       f <- basename(paste0(options$label, ".do"))
     }
-# print(options$code)
-# print(options$eval)
     if (is.numeric(options$eval)) {
       if (all(options$eval < 0)) {
         pre <- rep("", length(options$code))
@@ -22,7 +107,24 @@ stata_engine <- function (options)
       }
       options$code <- paste0(pre, options$code)
     }
-    writeLines(options$code, f)
+
+    # Optionally export the chunk's (current) Stata graph to a figure
+    # file, to be included in the output document (issue #28)
+    fig <- NULL
+    dofile <- options$code
+    if (isTRUE(options$stata.fig)) {
+      ext <- if (is.null(options$stata.fig.format)) "svg" else options$stata.fig.format
+      fig <- knitr::fig_path(paste0(".", ext), options, number = 1L)
+      dir.create(dirname(fig), recursive = TRUE, showWarnings = FALSE)
+      # remove any figure left over from a previous knit, so a failed
+      # export cannot silently include a stale image
+      unlink(fig)
+      # 'capture' so that a chunk which turns out not to produce a
+      # graph does not abort the do-file; the missing figure file is
+      # then reported below
+      dofile <- c(dofile, paste0("capture graph export \"", fig, "\", replace"))
+    }
+    writeLines(dofile, f)
 
 
     logf = sub("[.]do$", ".log", f)
@@ -46,7 +148,6 @@ stata_engine <- function (options)
   } else { # backwards compatibility
     code = paste(options$engine.opts, code, options$doargs)
   }
-# print(code)
 
   cmd = if (is.list(options$engine.path)) {
     options$engine.path[[options$engine]]
@@ -68,9 +169,21 @@ stata_engine <- function (options)
     stop(paste(out, collapse = "\n"))
   if (!all(options$eval==FALSE) && options$engine == "stata" && file.exists(logf))
     out = c(readLines(logf), out)
-# print("log file read")
-# print(out)
-# print(engine_output)
-# print(knitr::engine_output)
-  engine_output(options, options$code, out)
+
+  # Include the exported graph through the active output format's plot
+  # hook, so that the usual figure chunk options (fig.cap, fig.alt,
+  # out.width, out.height, fig.align, fig.link, ...) are honoured
+  extra <- NULL
+  if (!is.null(fig) && !all(options$eval==FALSE) &&
+      !identical(options$fig.show, "hide")) {
+    if (file.exists(fig)) {
+      options$fig.num <- 1L
+      options$fig.cur <- 1L
+      extra <- (knitr::knit_hooks$get("plot"))(fig, options)
+    } else {
+      message("stata.fig=TRUE but chunk '", options$label,
+              "' did not export a graph")
+    }
+  }
+  engine_output(options, options$code, out, extra)
 }

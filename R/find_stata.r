@@ -1,20 +1,77 @@
+#' Locate the Stata executable
+#'
+#' A helper function that seeks to locate your Stata executable.
+#' Ordinarily this is run automatically when \pkg{Statamarkdown} is loaded.
+#'
+#' This function searches for recent versions of Stata (>= Stata 11),
+#' in some of the usual default installation locations.
+#'
+#' If Stata is not found, you will have to specify its
+#' correct location yourself.
+#'
+#' @param message (logical) Whether or not to print a message
+#'   when Stata is found.
+#'
+#' @return A character string with the path and name of the Stata executable.
+#'
+#' @author Doug Hemken
+#'
+#' @seealso [Statamarkdown-package]
+#'
+#' @export
+#'
+#' @examples
+#' indoc <- '
+#' # An R console example
+#' ## In a first code chunk, set up with
+#' ```{r}
+#' library(Statamarkdown)
+#' ```
+#'
+#' ## Then mark Stata code chunks with
+#' ```{stata}
+#' sysuse auto, clear
+#' generate gpm = 1/mpg
+#' summarize price gpm
+#' ```
+#' '
+#'
+#' if (nzchar(Statamarkdown::find_stata()) &&
+#'     requireNamespace("rmarkdown", quietly = TRUE)) {
+#'   # To run this example, remove tempdir().
+#'   frmd <- file.path(tempdir(), "test.Rmd")
+#'   fhtml <- file.path(tempdir(), "test.html")
+#'
+#'   # Knit and render in a fresh R process, so that stale knitr state in a
+#'   # long-running session (e.g. from RStudio's "Run examples" button)
+#'   # cannot interfere with how the document text is parsed.
+#'   xfun::Rscript_call(
+#'     function(indoc, frmd, fhtml) {
+#'       writeLines(indoc, frmd)
+#'       rmarkdown::render(frmd, "html_document", fhtml)
+#'     },
+#'     args = list(indoc, frmd, fhtml)
+#'   )
+#'   message("HTML output created at: ", fhtml)
+#'   if (interactive()) {
+#'     # Show in the RStudio Viewer pane if available, otherwise the browser
+#'     viewer <- getOption("viewer", default = utils::browseURL)
+#'     viewer(fhtml)
+#'   }
+#' }
 find_stata <- function(message=TRUE) {
   stataexe <- ""
   if (.Platform$OS.type == "windows"){
-# if (message) packageStartupMessage("OS : Windows")
-#  stataexe <- NULL
   for (d in c("C:/Program Files","C:/Program Files (x86)")) {
     if (stataexe=="" && dir.exists(d)) {
       for (v in seq(19,11,-1)) {
         for (dirstub in c("Stata", "StataNow")){
           dv <- paste(d, paste0(dirstub,v), sep="/")
           if (dir.exists(dv)) {
-# if (message) packageStartupMessage("trying : ", dv)
             for (f in c("Stata", "StataIC", "StataSE", "StataMP", "StataBE",
                         "Stata-64", "StataIC-64", "StataSE-64", "StataMP-64", "StataBE-64")) {
               dvf <- paste(paste(dv, f, sep="/"), "exe", sep=".")
               if (file.exists(dvf)) {
-# if (message) packageStartupMessage("trying : ", dvf)
                 stataexe <- dvf
                 if (message) packageStartupMessage("Stata found at ", stataexe)
               }
@@ -29,7 +86,6 @@ find_stata <- function(message=TRUE) {
     if (stataexe != "") break
 }
   } else if (Sys.info()["sysname"]=="Darwin") {
-#    stataexe <- NULL
     dvstub <- c("/Applications/StataNow", "/Applications/Stata")
     for (dv in dvstub) {
     if (dir.exists(dv)) {
@@ -45,7 +101,6 @@ find_stata <- function(message=TRUE) {
     if (stataexe != "") break
     }
   } else if (.Platform$OS.type == "unix") {
-#      stataexe <- NULL
     for (f in c("stata-mp", "stata-se", "stata", "stata-ic")) {
       stataexe <- Sys.which(f)[[f]]
       if (stataexe != '') {

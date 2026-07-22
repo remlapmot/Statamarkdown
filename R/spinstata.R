@@ -1,13 +1,86 @@
+#' Convert a specially marked up Stata "do" file to Markdown and HTML
+#'
+#' This function takes a Stata file containing special markup in
+#' its comments, and converts it to
+#' Markdown and HTML documents (or one of several other formats).
+#'
+#' This function takes a Stata file containing special markup in
+#' its comments, and converts it into knitr's "spin" format.
+#' This is in turn sent to `knitr::spin`, and converted to
+#' Markdown and HTML (or one of several other formats).
+#'
+#' Special Markup:
+#' * `"/*' "` - Begin document text, ends with `"'*/"`
+#' * `"/*+ "` - Begin chunk header, ends with `"+*/"`
+#' * `"/*R "` - Begin a chunk of R code, ends with `"R*/"`
+#' * `"/** "` - Dropped from document, ends with `"*/*"`
+#'
+#' @param statafile A character string with the name of a Stata
+#'   "do" file, containing markup in its comments.
+#' @param text A character string in place of a file.
+#' @param keep Whether to save intermediate files.
+#' @param ... options passed to `knitr::spin`
+#'
+#' @return The path to the output file.
+#'
+#'   If given text instead of a file, returns the compiled document as a
+#'   character string.
+#'
+#' @author Doug Hemken
+#'
+#' @seealso [Statamarkdown-package]
+#'
+#' @export
+#'
+#' @examples
+#' indoc <- "/*'
+#' # Statamarkdown Example
+#'
+#' This is a special Stata script which can be used to generate a report.
+#' You can write normal text in command-style comments.
+#'
+#' First we load Statamarkdown.
+#' '*/
+#'
+#'   /*+  setup +*/
+#'   /*R
+#' library(Statamarkdown)
+#' R*/
+#'
+#'   /*' The report begins here. '*/
+#'
+#'   /*+  example1, engine='stata' +*/
+#'   sysuse auto
+#' /* Stata comment */
+#'   summarize
+#'
+#' /*' You can use the ***usual*** Markdown to mark up text.'*/
+#' "
+#' if (nzchar(Statamarkdown::find_stata()) &&
+#'     requireNamespace("markdown", quietly = TRUE)) {
+#'   # To run this example, remove tempdir().
+#'   fhtml <- file.path(tempdir(), "test.html")
+#'   # Spin in a fresh R process, so that stale knitr state in a
+#'   # long-running session (e.g. from RStudio's "Run examples" button)
+#'   # cannot interfere with how the document text is parsed.
+#'   x <- xfun::Rscript_call(
+#'     function(indoc) Statamarkdown::spinstata(text = indoc),
+#'     args = list(indoc)
+#'   )
+#'   writeLines(x, fhtml)
+#'   message("HTML output created at: ", fhtml)
+#'   if (interactive()) {
+#'     # Show in the RStudio Viewer pane if available, otherwise the browser
+#'     viewer <- getOption("viewer", default = utils::browseURL)
+#'     viewer(fhtml)
+#'   }
+#' }
 spinstata <- function(statafile, text=NULL, keep=FALSE, ...) {
-    # stopifnot((length(statafile)==1 && file.exists(statafile))||length(text)==1)
     if (is.null(text)) {
         vtext <- readLines(statafile, warn=FALSE)
     } else {
         vtext <- unlist(strsplit(text, "\n"))
-        # return(vtext)
     }
-
-    # return(vtext)
 
     md_start    <- grepl(pattern="^[[:space:]]*/[*]['][[:space:]]*", x=vtext)    # markdown begins
     md_end      <- grepl(pattern="['][*]/[[:space:]]*$", x=vtext)                # markdown ends
@@ -30,8 +103,6 @@ spinstata <- function(statafile, text=NULL, keep=FALSE, ...) {
         R_code[i]     <- R_code[i-1]     + R_start[i]     - R_end[i-1]
     }
 
-    stata_code <- (md_block + chunk_head + R_code) == 0              # stata code lines
-
     # Markdown (document)
     vtext[as.logical(md_start)] <- sub("^[[:space:]]*/[*]['][[:space:]]*", "", vtext[as.logical(md_start)])     # strip leading /*'
     vtext[as.logical(md_block)] <- paste("#' ", vtext[as.logical(md_block)])              # markdown lines
@@ -40,31 +111,10 @@ spinstata <- function(statafile, text=NULL, keep=FALSE, ...) {
     # Chunk header
     vtext[as.logical(chunk_start)] <- sub("^[[:space:]]*/[*][+][[:space:]]*", "#\\+ ", vtext[as.logical(chunk_start)])     # convert leading "*+" to "#+"
     vtext[as.logical(chunk_end)] <- sub("[+][*]/[[:space:]]*$", "", vtext[as.logical(chunk_end)])       # strip trailing ";"
-#    vtext[chunkl] <- gsub("\\n", "", vtext[chunkl])     # strip internal \n
-#    vtext[chunkl] <- paste0(vtext[chunkl], "\n")        # ensure trailing \n
 
     # R code
     vtext[as.logical(R_start)] <- sub("^[[:space:]]*/[*][R][[:space:]]*", "", vtext[as.logical(R_start)])    # convert leading "*R" to " "
     vtext[as.logical(R_end)] <- sub("[R][*]/[[:space:]]*$", "", vtext[as.logical(R_end)])               # strip trailing ";"
-    # return(data.frame(vtext, md_block, chunk_head, R_code, stata_code))
-
-    # # stata code
-    # vtext[statal] <- paste0(vtext[statal], ";\n")
-    #
-    # # ensure chunk headers start on new lines
-    # vtext[(pre & chunkl)!=chunkl] <- paste0("\n", vtext[(pre & chunkl)!=chunkl])
-    #
-    # # restore leading line breaks
-    # lb <- vector("character", length=length(pre))
-    # while (any(pre>0)) {
-    #     lb[pre>0] <- paste0(lb[pre>0], "\n")
-    #     pre[pre>0] <- pre[pre>0]-1
-    # }
-    # vtext <- paste0(lb, vtext)
-    #
-    # reshape from stata to R
-    #vtext <- unlist(strsplit(paste(vtext, collapse=""), "\n"))
-    #return(vtext)
 
     if (is.null(text)) {
         rfile <- sub("[.]do$", ".r", statafile, ignore.case=TRUE)
@@ -74,10 +124,8 @@ spinstata <- function(statafile, text=NULL, keep=FALSE, ...) {
         writeLines(vtext, rfile)
         if (!keep)
             on.exit(unlink(rfile), add=TRUE)
-        # knitr::spin(rfile, precious=keep, comment=c("^/[*][*]", "^.*[*]/[*] *$"), ...)
         spin_lang(rfile, precious=keep, comment=c("^/[*][*]", "^.*[*]/[*] *$"), language="stata", ...)
     } else {
-        # return(knitr::spin(text=vtext, precious=keep, comment=c("^/[*][*]", "^.*[*]/[*] *$"), ...))
         return(spin_lang(text=vtext, precious=keep, comment=c("^/[*][*]", "^.*[*]/[*] *$"), language="stata", ...))
     }
 
@@ -94,6 +142,11 @@ spin_lang = function(
 ) {
 
     format = match.arg(format)
+    # Fail early: compiling Rmd to HTML with knitr::knit2html() below needs
+    # the markdown package, which knitr only suggests
+    if (knit && report && format == 'Rmd' && !requireNamespace('markdown', quietly = TRUE))
+        stop("The 'markdown' package is required to compile the document to HTML.\n",
+             "  Please install it with install.packages('markdown').")
     x = if (nosrc <- is.null(text)) xfun::read_utf8(hair) else xfun::split_lines(text)
     stopifnot(length(comment) == 2L)
     c1 = grep(comment[1], x); c2 = grep(comment[2], x)

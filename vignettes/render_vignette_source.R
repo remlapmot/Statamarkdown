@@ -1,8 +1,25 @@
-library(rmarkdown)
-
-render("vignettes/basicuse.rmd", output_format=html_vignette(),
-       output_file="1_Basic_Use_of_Statamarkdown.html", output_dir="inst/doc")
-render("vignettes/linkblocks.Rmd", output_format=html_vignette(),
-       output_file="2_Linking_Stata_Code_Chunks.html", output_dir="inst/doc")
-render("vignettes/randstata.rmd", output_format=html_vignette(),
-       output_file="3_Combining_Stata_and_R.html", output_dir="inst/doc")
+# Precompute the vignettes, which require Stata, following
+# https://ropensci.org/blog/2019/12/08/precompute-vignettes/
+# Run from the package root directory:
+#   source("vignettes/render_vignette_source.R")
+#
+# Each vignette is knit in a fresh R process (as R CMD build does)
+# because Statamarkdown sets the engine.path chunk option in .onAttach,
+# and knitr::knit() restores chunk options when it finishes -- so a
+# second knit in the same session would find engine.path unset.
+#
+# The knits are run from within vignettes/ so that the generated files
+# and Stata log files stay within the vignettes directory.
+#
+# The display-only examples in the .qmd.orig files use Quarto's
+# "unexecuted block" syntax, ```{{stata ...}}, which knitr passes
+# through untouched here and quarto renders as a ```{stata ...}
+# fence when the vignettes are built.
+xfun::in_dir("vignettes", {
+  for (v in c("basicuse", "linkblocks", "randstata")) {
+    xfun::Rscript_call(
+      knitr::knit,
+      list(input = paste0(v, ".qmd.orig"), output = paste0(v, ".qmd"), quiet = TRUE)
+    )
+  }
+})
