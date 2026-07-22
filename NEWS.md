@@ -1,5 +1,6 @@
 # Statamarkdown (development version)
 
+* Fixed the `collectcode` chunk option when knitr evaluates chunks in a different directory to the document, for example for a document in a subfolder of an RStudio project with the "Evaluate chunks in directory: Project" option set, or when knitting with `rmarkdown::render(knit_root_dir=)`. The temporary `profile.do` is now created, and any pre-existing `profile.do` snapshot and restored, in the directory where the chunks (and therefore Stata) run. (thanks @DaniMori in #17)
 * Switch from including the html docs files to including them within the package as precomputed vignettes using Quarto.
 * Tweak helpfile examples such that they run within RStudio.
 * Add markdown to Suggests dependencies because it is needed for a code path within spinstata (in fact the one in that helpfile).
