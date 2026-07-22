@@ -26,6 +26,32 @@ log output.  The end user should not need to use the language
 engine function directly.  This is the workhorse function that
 actually calls Stata and returns output.
 }
+\section{Including Stata graphs}{
+
+
+Setting the chunk option \code{stata.fig=TRUE} exports the graph drawn
+by the chunk (Stata's current graph) to a figure file, and includes
+it in the output document.  The figure is laid out by knitr's
+usual plot machinery, so the standard figure chunk options apply,
+including \code{fig.cap} (the figure caption), \code{fig.alt} (the
+alternative text, for accessibility; falling back to \code{fig.cap} if
+unset), \code{out.width}, \code{out.height}, \code{fig.align}, \code{fig.link} and
+\code{fig.path}.
+
+The export format is controlled with the \code{stata.fig.format} chunk
+option, and defaults to \code{"svg"}, which Stata can export on all
+platforms in batch mode (including console Stata on Linux, which
+cannot export PNG).  For PDF/LaTeX output set, for example,
+\code{stata.fig.format="pdf"}.
+
+Note that knitr's \code{fig.width}, \code{fig.height} and \code{dpi} options
+control R's graphics devices and have no effect on Stata graphs;
+set the graph size in Stata, for example with the \code{xsize()} and
+\code{ysize()} options to \verb{graph display}.  One graph is exported per
+chunk; to include several graphs, draw them in separate chunks
+(using \code{collectcode=TRUE} to carry the data over).
+}
+
 \examples{
 indoc <- '
 # An R console example
