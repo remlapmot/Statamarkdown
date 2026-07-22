@@ -8,9 +8,8 @@
 # and knitr::knit() restores chunk options when it finishes -- so a
 # second knit in the same session would find engine.path unset.
 #
-# The knits are run from within vignettes/ so that the chunks, the
-# knitr hooks, and Stata itself all share the same working directory
-# (the collectcode option in linkblocks relies on this).
+# The knits are run from within vignettes/ so that the generated files
+# and Stata log files stay within the vignettes directory.
 #
 # The display-only examples in the .qmd.orig files use Quarto's
 # "unexecuted block" syntax, ```{{stata ...}}, which knitr passes
