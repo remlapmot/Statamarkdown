@@ -39,8 +39,11 @@ chunks and fences of more than three backticks are handled.  A chunk
 is extracted when its header engine is \code{stata}, or when it uses the
 older \code{r} chunk form with an \code{engine = "stata"} option.  Chunks with
 the \code{purl = FALSE} or \code{eval = FALSE} options (either in the chunk
-header or in \verb{#|} option comments) are skipped, and \verb{#|} option
-comments are not copied into the do-file.
+header or in option comments) are skipped.  Option comments in all
+the forms knitr accepts in Stata chunks (\verb{#|}, and the Stata
+comment-prefix forms \verb{*|} and \verb{//|}) are recognised: they are never
+copied into the do-file as code, but with \code{documentation >= 1} they
+are recorded as plain Stata comments below the chunk header line.
 }
 \examples{
 indoc <- '
