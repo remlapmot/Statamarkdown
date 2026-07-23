@@ -18,8 +18,11 @@
 #' This package provides a language engine with code chunk options
 #' to overcome these limitations.
 #'
-#' If you render multiple documents from the same script or R session,
-#' you should `detach("package:Statamarkdown")` in between documents.
+#' Multiple documents can be rendered from the same script or R
+#' session; the engine re-establishes the Stata executable path and
+#' the `collectcode` hook for each document.  (In versions upto
+#' 0.9.7 you had to `detach("package:Statamarkdown")` in between
+#' documents.)
 #'
 #' # Code Block (Chunk) Options
 #'

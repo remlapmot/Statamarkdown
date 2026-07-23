@@ -91,6 +91,16 @@
 #' }
 stata_engine <- function (options)
 {
+  # knitr restores the knit hooks when a knit finishes, so in the
+  # second document knitted in one R session the collectcode hook
+  # registered when the package was attached is gone; re-register it
+  # (the hook acts after the chunk, so this is early enough even for
+  # the current chunk)
+  if (is.null(knitr::knit_hooks$get("collectcode")) &&
+      !is.null(.statamarkdown$stataexe)) {
+    stata_collectcode(.statamarkdown$stataexe)
+  }
+
   code <- {
     if (is.null(options$savedo) || options$savedo==FALSE) {
       f <- basename(tempfile(pattern="stata", tmpdir=".", fileext=".do"))
@@ -165,6 +175,19 @@ stata_engine <- function (options)
     options$engine.path[[options$engine]]
   } else { # backwards compatibility
     options$engine.path
+  }
+  if (is.null(cmd) || !nzchar(cmd)) {
+    # The engine.path chunk option is set when the package is attached,
+    # but knitr restores chunk options when a knit finishes -- so in the
+    # second document rendered in one R session the option is unset
+    # again.  Fall back to the executable located at attach time, which
+    # is cached for the whole session.
+    cmd <- .statamarkdown$stataexe
+  }
+  if (is.null(cmd) || !nzchar(cmd)) {
+    stop("No Stata executable is set. Either none was found when ",
+         "Statamarkdown was attached, or the engine.path chunk option ",
+         "has been unset; see ?find_stata.")
   }
 
   out = if (!all(options$eval==FALSE)) {
