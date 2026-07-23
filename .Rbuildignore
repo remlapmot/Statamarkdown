@@ -6,3 +6,4 @@
 ^vignettes/render_vignette_source\.R$
 ^justfile$
 ^_pkgdown\.yml$
+^\.github$
