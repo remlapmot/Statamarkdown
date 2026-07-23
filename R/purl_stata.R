@@ -9,8 +9,11 @@
 #' is extracted when its header engine is `stata`, or when it uses the
 #' older `r` chunk form with an `engine = "stata"` option.  Chunks with
 #' the `purl = FALSE` or `eval = FALSE` options (either in the chunk
-#' header or in `#|` option comments) are skipped, and `#|` option
-#' comments are not copied into the do-file.
+#' header or in option comments) are skipped.  Option comments in all
+#' the forms knitr accepts in Stata chunks (`#|`, and the Stata
+#' comment-prefix forms `*|` and `//|`) are recognised: they are never
+#' copied into the do-file as code, but with `documentation >= 1` they
+#' are recorded as plain Stata comments below the chunk header line.
 #'
 #' @param input A character string with the name of the input document.
 #' @param output A character string with the name of the do-file to
@@ -97,15 +100,24 @@ purl_stata <- function(input, output = NULL, text = NULL, documentation = 1L) {
     if (grepl("(purl|eval)\\s*=\\s*F(ALSE)?\\b", header)) next
 
     code <- if (e - b > 1L) x[(b + 1L):(e - 1L)] else character()
-    # remove (and inspect) leading #| option comments
+    # remove (and inspect) leading option comments: #| as in R chunks,
+    # and the comment-prefix forms knitr accepts in Stata chunks,
+    # *| and //|
+    opt_re <- "^\\s*(#|\\*|//)\\|"
     opts <- character()
-    while (length(code) && grepl("^\\s*#\\|", code[1L])) {
+    while (length(code) && grepl(opt_re, code[1L])) {
       opts <- c(opts, code[1L])
       code <- code[-1L]
     }
     if (any(grepl("(purl|eval)\\s*:\\s*false", opts))) next
 
-    if (doc >= 1L) code <- c(paste0("* ---- ", header, " ----"), code)
+    if (doc >= 1L) {
+      # record the chunk options: qmd-style option comments become
+      # plain Stata comments under the header line
+      code <- c(paste0("* ---- ", header, " ----"),
+                if (length(opts)) paste("*", trimws(sub(opt_re, "", opts))),
+                code)
+    }
     nstata <- nstata + 1L
     res <- c(res, code, "")
   }

@@ -27,6 +27,13 @@
 #' cannot export PNG).  For PDF/LaTeX output set, for example,
 #' `stata.fig.format="pdf"`.
 #'
+#' The hyphenated option spellings `stata-fig` and `stata-fig-format`
+#' are also accepted, matching Quarto's option naming convention (as
+#' in `fig-cap` and `fig-alt`).  These work in YAML-style option
+#' comments (`#|` or `*|` lines at the start of the chunk, in either
+#' R Markdown or Quarto documents), but not in the chunk header's
+#' comma-separated syntax, where a hyphenated name is not valid R.
+#'
 #' Note that knitr's `fig.width`, `fig.height` and `dpi` options
 #' control R's graphics devices and have no effect on Stata graphs;
 #' set the graph size in Stata, for example with the `xsize()` and
@@ -87,6 +94,16 @@
 #' }
 stata_engine <- function (options)
 {
+  # knitr restores the knit hooks when a knit finishes, so in the
+  # second document knitted in one R session the collectcode hook
+  # registered when the package was attached is gone; re-register it
+  # (the hook acts after the chunk, so this is early enough even for
+  # the current chunk)
+  if (is.null(knitr::knit_hooks$get("collectcode")) &&
+      !is.null(.statamarkdown$stataexe)) {
+    stata_collectcode(.statamarkdown$stataexe)
+  }
+
   code <- {
     if (is.null(options$savedo) || options$savedo==FALSE) {
       f <- basename(tempfile(pattern="stata", tmpdir=".", fileext=".do"))
@@ -109,11 +126,19 @@ stata_engine <- function (options)
     }
 
     # Optionally export the chunk's (current) Stata graph to a figure
-    # file, to be included in the output document (issue #28)
+    # file, to be included in the output document (issue #28).
+    # knitr only normalises the names of its own options, so accept
+    # both the dotted spelling (stata.fig) and the hyphenated spelling
+    # used in Quarto documents (stata-fig)
+    stata_fig <- function(name) {
+      v <- options[[name]]
+      if (is.null(v)) v <- options[[gsub(".", "-", name, fixed = TRUE)]]
+      v
+    }
     fig <- NULL
     dofile <- options$code
-    if (isTRUE(options$stata.fig)) {
-      ext <- if (is.null(options$stata.fig.format)) "svg" else options$stata.fig.format
+    if (isTRUE(stata_fig("stata.fig"))) {
+      ext <- if (is.null(stata_fig("stata.fig.format"))) "svg" else stata_fig("stata.fig.format")
       fig <- knitr::fig_path(paste0(".", ext), options, number = 1L)
       dir.create(dirname(fig), recursive = TRUE, showWarnings = FALSE)
       # remove any figure left over from a previous knit, so a failed
@@ -153,6 +178,19 @@ stata_engine <- function (options)
     options$engine.path[[options$engine]]
   } else { # backwards compatibility
     options$engine.path
+  }
+  if (is.null(cmd) || !nzchar(cmd)) {
+    # The engine.path chunk option is set when the package is attached,
+    # but knitr restores chunk options when a knit finishes -- so in the
+    # second document rendered in one R session the option is unset
+    # again.  Fall back to the executable located at attach time, which
+    # is cached for the whole session.
+    cmd <- .statamarkdown$stataexe
+  }
+  if (is.null(cmd) || !nzchar(cmd)) {
+    stop("No Stata executable is set. Either none was found when ",
+         "Statamarkdown was attached, or the engine.path chunk option ",
+         "has been unset; see ?find_stata.")
   }
 
   out = if (!all(options$eval==FALSE)) {

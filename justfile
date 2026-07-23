@@ -3,7 +3,7 @@ check: docs
 docs:
     R -e "devtools::document()"
 install: docs
-    R CMD INSTALL .
+    R -e "devtools::install(build_vignettes = TRUE)"
 vigs:
     R -e "source('vignettes/render_vignette_source.R')"
 test:

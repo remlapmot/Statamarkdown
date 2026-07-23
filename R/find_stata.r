@@ -124,6 +124,9 @@ find_stata <- function(message=TRUE) {
   }
   if (stataexe!="") {
     knitr::opts_chunk$set(engine.path=list(stata=stataexe))
+    # also cache the path for the whole session, since knitr restores
+    # the engine.path chunk option when a knit finishes
+    .statamarkdown$stataexe <- stataexe
   } else {
     packageStartupMessage("No Stata executable found.")
   }

@@ -137,3 +137,39 @@ test_that("invalid documentation values error", {
   expect_error(purl_stata(text = indoc, documentation = 3), "documentation")
   expect_error(purl_stata(text = indoc, documentation = "yes"), "documentation")
 })
+
+test_that("Stata-style *| and //| option comments are stripped and honoured", {
+  doc <- paste(c(
+    "```{stata}",
+    "*| label: scatterplot",
+    "*| stata.fig: true",
+    "*| fig-cap: \"Mileage against weight\"",
+    "scatter mpg weight",
+    "```",
+    "",
+    "```{stata}",
+    "//| label: skipme",
+    "//| purl: false",
+    "display 1",
+    "```",
+    "",
+    "```{stata}",
+    "*| eval: false",
+    "display 2",
+    "```"
+  ), collapse = "\n")
+
+  res <- purl_stata(text = doc)
+  expect_true(any(grepl("scatter mpg weight", res, fixed = TRUE)))
+  # option comment lines are not copied into the do-file as code ...
+  expect_false(any(grepl("^\\s*(\\*|#|//)\\|", res)))
+  # ... but are recorded as plain Stata comments
+  expect_true(any(grepl('* fig-cap: "Mileage against weight"', res, fixed = TRUE)))
+  # purl: false and eval: false in option comments are honoured
+  expect_false(any(grepl("display 1", res, fixed = TRUE)))
+  expect_false(any(grepl("display 2", res, fixed = TRUE)))
+
+  # with documentation = 0 the option comments are dropped entirely
+  res0 <- purl_stata(text = doc, documentation = 0)
+  expect_false(any(grepl("fig-cap", res0)))
+})

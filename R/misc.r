@@ -1,3 +1,8 @@
+# Package-level cache. Unlike the chunk options, which knitr restores
+# to their pre-knit state when a knit finishes, this environment
+# survives for the whole R session.
+.statamarkdown <- new.env(parent = emptyenv())
+
 # When the package loads
 .onAttach <- function (libname, pkgname) {
   # Redefine the 'stata' engine
