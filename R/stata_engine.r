@@ -27,9 +27,12 @@
 #' cannot export PNG).  For PDF/LaTeX output set, for example,
 #' `stata.fig.format="pdf"`.
 #'
-#' In Quarto documents the hyphenated option spellings `stata-fig`
-#' and `stata-fig-format` are also accepted, matching Quarto's option
-#' naming convention (as in `fig-cap` and `fig-alt`).
+#' The hyphenated option spellings `stata-fig` and `stata-fig-format`
+#' are also accepted, matching Quarto's option naming convention (as
+#' in `fig-cap` and `fig-alt`).  These work in YAML-style option
+#' comments (`#|` or `*|` lines at the start of the chunk, in either
+#' R Markdown or Quarto documents), but not in the chunk header's
+#' comma-separated syntax, where a hyphenated name is not valid R.
 #'
 #' Note that knitr's `fig.width`, `fig.height` and `dpi` options
 #' control R's graphics devices and have no effect on Stata graphs;

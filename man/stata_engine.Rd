@@ -44,9 +44,12 @@ platforms in batch mode (including console Stata on Linux, which
 cannot export PNG).  For PDF/LaTeX output set, for example,
 \code{stata.fig.format="pdf"}.
 
-In Quarto documents the hyphenated option spellings \code{stata-fig}
-and \code{stata-fig-format} are also accepted, matching Quarto's option
-naming convention (as in \code{fig-cap} and \code{fig-alt}).
+The hyphenated option spellings \code{stata-fig} and \code{stata-fig-format}
+are also accepted, matching Quarto's option naming convention (as
+in \code{fig-cap} and \code{fig-alt}).  These work in YAML-style option
+comments (\verb{#|} or \verb{*|} lines at the start of the chunk, in either
+R Markdown or Quarto documents), but not in the chunk header's
+comma-separated syntax, where a hyphenated name is not valid R.
 
 Note that knitr's \code{fig.width}, \code{fig.height} and \code{dpi} options
 control R's graphics devices and have no effect on Stata graphs;
