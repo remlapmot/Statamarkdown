@@ -27,6 +27,10 @@
 #' cannot export PNG).  For PDF/LaTeX output set, for example,
 #' `stata.fig.format="pdf"`.
 #'
+#' In Quarto documents the hyphenated option spellings `stata-fig`
+#' and `stata-fig-format` are also accepted, matching Quarto's option
+#' naming convention (as in `fig-cap` and `fig-alt`).
+#'
 #' Note that knitr's `fig.width`, `fig.height` and `dpi` options
 #' control R's graphics devices and have no effect on Stata graphs;
 #' set the graph size in Stata, for example with the `xsize()` and
@@ -109,11 +113,19 @@ stata_engine <- function (options)
     }
 
     # Optionally export the chunk's (current) Stata graph to a figure
-    # file, to be included in the output document (issue #28)
+    # file, to be included in the output document (issue #28).
+    # knitr only normalises the names of its own options, so accept
+    # both the dotted spelling (stata.fig) and the hyphenated spelling
+    # used in Quarto documents (stata-fig)
+    stata_fig <- function(name) {
+      v <- options[[name]]
+      if (is.null(v)) v <- options[[gsub(".", "-", name, fixed = TRUE)]]
+      v
+    }
     fig <- NULL
     dofile <- options$code
-    if (isTRUE(options$stata.fig)) {
-      ext <- if (is.null(options$stata.fig.format)) "svg" else options$stata.fig.format
+    if (isTRUE(stata_fig("stata.fig"))) {
+      ext <- if (is.null(stata_fig("stata.fig.format"))) "svg" else stata_fig("stata.fig.format")
       fig <- knitr::fig_path(paste0(".", ext), options, number = 1L)
       dir.create(dirname(fig), recursive = TRUE, showWarnings = FALSE)
       # remove any figure left over from a previous knit, so a failed

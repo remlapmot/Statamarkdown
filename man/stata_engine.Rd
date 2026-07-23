@@ -44,6 +44,10 @@ platforms in batch mode (including console Stata on Linux, which
 cannot export PNG).  For PDF/LaTeX output set, for example,
 \code{stata.fig.format="pdf"}.
 
+In Quarto documents the hyphenated option spellings \code{stata-fig}
+and \code{stata-fig-format} are also accepted, matching Quarto's option
+naming convention (as in \code{fig-cap} and \code{fig-alt}).
+
 Note that knitr's \code{fig.width}, \code{fig.height} and \code{dpi} options
 control R's graphics devices and have no effect on Stata graphs;
 set the graph size in Stata, for example with the \code{xsize()} and

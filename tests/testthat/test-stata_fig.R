@@ -80,3 +80,23 @@ test_that("chunks without stata.fig are unchanged", {
   expect_no_match(md, "!\\[") # no figure include
   expect_false(dir.exists("figure"))
 })
+
+test_that("the hyphenated Quarto spellings stata-fig and stata-fig-format work", {
+  skip_on_cran()
+  skip_if_no_stata()
+  local_test_dir()
+
+  doc <- paste(c(
+    "```{stata hyphens}",
+    "*| stata-fig: true",
+    "*| stata-fig-format: pdf",
+    "sysuse auto",
+    "scatter mpg weight",
+    "```"
+  ), collapse = "\n")
+
+  md <- knitr::knit(text = doc, quiet = TRUE)
+
+  expect_true(file.exists("figure/hyphens-1.pdf"))
+  expect_match(md, "figure/hyphens-1.pdf", fixed = TRUE)
+})
