@@ -9,13 +9,13 @@
 To use these functions and settings, attach the \pkg{Statamarkdown}
 library from \emph{within} the document to be \code{knit}.  A
 typical preliminary code chunk in a document would be
-}
-\details{
+
 \if{html}{\out{<div class="sourceCode">}}\preformatted{```\{r setup, include=FALSE\}
 library(Statamarkdown)
 ```
 }\if{html}{\out{</div>}}
-
+}
+\details{
 Using the "Stata" language engine in \pkg{knitr} has a number of limitations.
 Each Stata code chunk is run as a separate batch file, and source
 code is part of the output returned to the document being knit.
